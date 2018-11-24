@@ -12,7 +12,7 @@ import sjq.light.async.mysql.execute.ExecuteCallback;
 import sjq.light.mysql.protocol.buffer.InputMySQLBuffer;
 import sjq.light.mysql.protocol.buffer.OutputMySQLBuffer;
 
-public class EventData {
+public class IOSession {
 	private SocketChannel socketChannel;
 	private LinkedList<ByteBuffer> writeableByteBufferQueue;
 	private InputBuffer readInputBuffer;
@@ -22,9 +22,9 @@ public class EventData {
 	private ExecuteCallback executeCallback;
 	private SelectionKey selectionKey;
 	private ServerInfo serverInfo;
-	private ResultMySQLPacket resultPacketList;
+	private MySQLResultPacket resultPacketList;
 
-	public EventData(SelectionKey selectionKey) {
+	public IOSession(SelectionKey selectionKey) {
 		this.writeableByteBufferQueue = new LinkedList<>();
 		this.status = Status.HandShakeing;
 		this.readInputBuffer = new InputBuffer();
@@ -99,11 +99,11 @@ public class EventData {
 		return serverInfo;
 	}
 
-	public ResultMySQLPacket resultPacketList() {
+	public MySQLResultPacket resultPacketList() {
 		return resultPacketList;
 	}
 
-	public void setResultPacketList(ResultMySQLPacket resultPacketList) {
+	public void setResultPacketList(MySQLResultPacket resultPacketList) {
 		this.resultPacketList = resultPacketList;
 	}
 	

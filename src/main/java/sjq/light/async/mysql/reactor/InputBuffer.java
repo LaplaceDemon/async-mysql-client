@@ -15,10 +15,7 @@ public class InputBuffer {
 	 * 可读长度
 	 */
 	private int readableLength;
-	/**
-	 * 最后一个Buffer读到的index；
-	 */
-	private int lastBufferReadIndex;
+	
 	private LinkedList<ByteBuffer> byteBufferQueue = new LinkedList<>();
 	
 	public void push(ByteBuffer buffer) {
@@ -33,20 +30,25 @@ public class InputBuffer {
 	 */
 	public byte getByte() {
 		ByteBuffer lastByteBuffer;
-		try {
-			lastByteBuffer = this.byteBufferQueue.getLast();
-		} catch (NoSuchElementException e) {
-			throw e;
+		while(true) {
+			try {
+				lastByteBuffer = this.byteBufferQueue.getLast();
+			} catch (NoSuchElementException e) {
+				// 没有数据了。
+				throw e;
+			}
+			
+			if(lastByteBuffer.remaining() == 0) {
+				this.byteBufferQueue.removeLast();
+				continue;
+			}
+			
+			lastByteBuffer.mark();
+			byte b = lastByteBuffer.get();
+			lastByteBuffer.reset();
+			return b;
 		}
 		
-		if(lastByteBuffer.remaining() == 0) {
-			this.byteBufferQueue.removeLast();
-		}
-		
-		lastByteBuffer.mark();
-		byte b = lastByteBuffer.get();
-		lastByteBuffer.reset();
-		return b;
 	}
 	
 	/**
@@ -55,26 +57,6 @@ public class InputBuffer {
 	 */
 	public byte[] getNBytes(int needLength) {
 		byte[] bs = new byte[needLength];
-//		ByteBuffer lastByteBuffer;
-//		try {
-//			lastByteBuffer = this.byteBufferQueue.getLast();
-//		} catch (NoSuchElementException e) {
-//			throw e;
-//		}
-//		int remainingLength = lastByteBuffer.remaining();
-//		if(remainingLength == 0) {
-//			this.byteBufferQueue.removeLast();
-//		}
-//		
-//		if(needLength <= remainingLength) {
-//			lastByteBuffer.mark();
-//			lastByteBuffer.get(bs, 0, needLength);
-//			lastByteBuffer.reset();
-//			return bs;
-//		} else {
-//			
-//		}
-		
 		int readLen = 0;
 		int needReadLength = needLength;
 		Iterator<ByteBuffer> descendingIterator = this.byteBufferQueue.descendingIterator();
@@ -175,6 +157,49 @@ public class InputBuffer {
 
 	public byte readByte() {
 		return (byte)read();
+	}
+	
+	public void skip() {
+		ByteBuffer lastByteBuffer;
+		while(true) {
+			try {
+				lastByteBuffer = this.byteBufferQueue.getLast();
+			} catch (NoSuchElementException e) {
+				throw e;
+			}
+			
+			if(lastByteBuffer.remaining() == 0) {
+				this.byteBufferQueue.removeLast();
+				continue;
+			}
+			
+			int position = lastByteBuffer.position();
+			lastByteBuffer.position(position + 1);
+		}
+		
+	}
+	
+	public void skip(int n) {
+		if(n < 0) {
+			throw new IllegalArgumentException("the argument must been greater than 0.");
+		}
+		ByteBuffer lastByteBuffer;
+		while(true) {
+			try {
+				lastByteBuffer = this.byteBufferQueue.getLast();
+			} catch (NoSuchElementException e) {
+				throw e;
+			}
+			
+			if(lastByteBuffer.remaining() == 0) {
+				this.byteBufferQueue.removeLast();
+				continue;
+			}
+			
+			int position = lastByteBuffer.position();
+			lastByteBuffer.position(position + 1);
+		}
+		
 	}
 
 	public void clear() {

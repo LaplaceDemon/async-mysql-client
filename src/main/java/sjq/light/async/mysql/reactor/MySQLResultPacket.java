@@ -8,12 +8,12 @@ import sjq.light.mysql.protocol.packet.response.resultset.FieldPacket;
 import sjq.light.mysql.protocol.packet.response.resultset.ResultSetHeaderPacket;
 import sjq.light.mysql.protocol.packet.response.resultset.RowPacket;
 
-public class ResultMySQLPacket {
+public class MySQLResultPacket {
 	private ResultSetHeaderPacket resultSetHeaderPacket;
 	private List<FieldPacket> fieldPacketList;
 	private List<RowPacket> rowPacketList;
 	
-	public ResultMySQLPacket() {
+	public MySQLResultPacket() {
 		this.fieldPacketList = new ArrayList<>();
 		this.rowPacketList = new LinkedList<>();
 	}

@@ -9,6 +9,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -107,6 +108,18 @@ public class JDBCUtils {
 		}
 
 		return map;
+	}
+	
+	public ResultSet queryResult(String sql, List<Object> params) throws SQLException {
+		pstmt = connection.prepareStatement(sql);
+		int index = 1;
+		if (params != null && !params.isEmpty()) {
+			for (int i = 0; i < params.size(); i++) {
+				pstmt.setObject(index++, params.get(i));
+			}
+		}
+		ResultSet resultSet = pstmt.executeQuery();
+		return resultSet;
 	}
 
 	/**

@@ -12,10 +12,10 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 
-import sjq.light.async.mysql.AsyncResultSet;
 import sjq.light.async.mysql.Config;
 import sjq.light.async.mysql.Status;
 import sjq.light.async.mysql.execute.ExecuteTask;
+import sjq.light.async.mysql.resultset.AsyncResultSet;
 import sjq.light.mysql.protocol.buffer.MySQLMessage;
 import sjq.light.mysql.protocol.commons.CapabilityFlag;
 import sjq.light.mysql.protocol.packet.auth.AuthMoreDataPacket;
@@ -39,15 +39,15 @@ public class IOReactor {
 		this.sqlExecuteQueue = sqlExecuteQueue;
 	}
 
-	public EventData register(SocketChannel socektChannel) throws IOException {
+	public IOSession register(SocketChannel socektChannel) throws IOException {
 		socektChannel.configureBlocking(false);
 		SelectionKey key = socektChannel.register(selector, SelectionKey.OP_WRITE);
-		EventData eventData = new EventData(key);
+		IOSession eventData = new IOSession(key);
 		key.attach(eventData);
 		return eventData;
 	}
 	
-	public void consoumerCommand(EventData eventData) {
+	public void consoumerCommand(IOSession eventData) {
 		SelectionKey selectionKey = eventData.getSelectionKey();
 		if((selectionKey.interestOps() & SelectionKey.OP_WRITE) == 0) {
 			selectionKey.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
@@ -61,7 +61,7 @@ public class IOReactor {
 		eventData.setStatus(Status.Commanding);
 		CommandQueryPacket command = new CommandQueryPacket();
 		eventData.setExecuteCallback(executeTask.getExecuteCallback());
-		eventData.setResultPacketList(new ResultMySQLPacket());
+		eventData.setResultPacketList(new MySQLResultPacket());
 		command.setSql(executeTask.getSql());
 		command.setSequenceId((byte)0);
 		command.autoSetLength();
@@ -95,7 +95,7 @@ public class IOReactor {
 //                    sc.register(selector, SelectionKey.OP_READ);   
                 } else if (key.isWritable()) {
 					SocketChannel socketChannel = (SocketChannel) key.channel();
-					EventData eventData = (EventData) key.attachment();
+					IOSession eventData = (IOSession) key.attachment();
 					
 					this.consoumerCommand(eventData);
 					
@@ -129,7 +129,7 @@ public class IOReactor {
 					}
 				} else if (key.isReadable()) {
 					SocketChannel socketChannel = (SocketChannel) key.channel();
-					EventData eventData = (EventData) key.attachment();
+					IOSession eventData = (IOSession) key.attachment();
 					int readCount = 0;
 					long readBytesNum = 0;
 					while (true) {

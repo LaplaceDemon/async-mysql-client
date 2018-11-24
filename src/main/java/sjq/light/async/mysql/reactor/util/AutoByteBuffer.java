@@ -1,15 +1,20 @@
 package sjq.light.async.mysql.reactor.util;
 
+/**
+ * 自动扩容的ByteBuffer
+ * @author jackie.sjq
+ *
+ */
 public class AutoByteBuffer {
 	private byte[] bs;
 	private int index;
 	private int length;
+	private static final int InitLen = 64;
 	
 	public AutoByteBuffer() {
-		int len = 64;
-		this.bs = new byte[len];
+		this.bs = new byte[InitLen];
 		this.index = 0;
-		this.length = len;
+		this.length = InitLen;
 	}
 	
 	public AutoByteBuffer(int len) {

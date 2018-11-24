@@ -8,7 +8,6 @@ import java.net.UnknownHostException;
 import java.util.Arrays;
 
 public class Client {
-
 	private static final String IP = "192.168.43.214";
 	private static final int PORT = 3306;
 

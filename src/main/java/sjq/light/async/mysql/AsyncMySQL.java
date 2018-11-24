@@ -11,13 +11,14 @@ import java.util.concurrent.BlockingQueue;
 
 import sjq.light.async.mysql.execute.ExecuteCallback;
 import sjq.light.async.mysql.execute.ExecuteTask;
-import sjq.light.async.mysql.reactor.EventData;
 import sjq.light.async.mysql.reactor.IOReactor;
+import sjq.light.async.mysql.reactor.IOSession;
+import sjq.light.async.mysql.resultset.AsyncPreparedStatement;
 
 public class AsyncMySQL {
 	private IOReactor ioReactor;
 	private Config config;
-	private EventData eventData;
+	private IOSession eventData;
 	private BlockingQueue<ExecuteTask> sqlExecuteQueue;
 	
 	public void connect() throws UnknownHostException, IOException {
@@ -82,6 +83,11 @@ public class AsyncMySQL {
 		MySQLMessage mySQLMessage = new ByteBufferMySQLMessage(command.getLength() + 4);
 		command.write(mySQLMessage, this.eventData.outputMySQLBuffer());
 		*/
+	}
+	
+	public void execute(AsyncPreparedStatement preparedStatement, ExecuteCallback callback) {
+		String statementSQL = preparedStatement.getStatement();
+		this.execute(statementSQL, callback);
 	}
 
 	public void start() throws IOException {

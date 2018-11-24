@@ -1,4 +1,4 @@
-package sjq.light.async.mysql;
+package sjq.light.async.mysql.resultset;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -23,21 +23,23 @@ import java.util.Calendar;
 import java.util.Iterator;
 import java.util.Map;
 
-import sjq.light.async.mysql.reactor.ResultMySQLPacket;
+import sjq.light.async.mysql.reactor.MySQLResultPacket;
 import sjq.light.mysql.protocol.packet.response.resultset.FieldPacket;
 import sjq.light.mysql.protocol.packet.response.resultset.RowPacket;
 
 public class AsyncResultSet implements ResultSet{
-	private ResultMySQLPacket resultMySQLPacket;
+	private MySQLResultPacket resultMySQLPacket;
 	private Iterator<RowPacket> rowPacketIterator;
 	private RowPacket nextRowPacket;
+	private ResultSetMetaData resultSetMetaData;
 	
-	public AsyncResultSet(ResultMySQLPacket resultMySQLPacket) {
+	public AsyncResultSet(MySQLResultPacket resultMySQLPacket) {
 		this.resultMySQLPacket = resultMySQLPacket;
 		Iterator<RowPacket> iterator = this.resultMySQLPacket.rowPacketList().iterator();
 		this.rowPacketIterator = iterator;
 		RowPacket nextRowPacket = this.rowPacketIterator.next();
 		this.nextRowPacket = nextRowPacket;
+		this.resultSetMetaData = new AsyncResultSetMetaData(resultMySQLPacket);
 	}
 	
 	private int getColumnIndex(String columnLabel) {
@@ -281,8 +283,7 @@ public class AsyncResultSet implements ResultSet{
 
 	@Override
 	public ResultSetMetaData getMetaData() throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		return this.resultSetMetaData;
 	}
 
 	@Override

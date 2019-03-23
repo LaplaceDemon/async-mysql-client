@@ -15,8 +15,8 @@ import io.github.laplacedemon.asyncmysql.network.handler.HandshakeDecoder;
 import io.github.laplacedemon.asyncmysql.network.handler.HandshakeHandler;
 import io.github.laplacedemon.asyncmysql.network.handler.MoreAuthDecoder;
 import io.github.laplacedemon.asyncmysql.network.handler.MoreAuthHandler;
+import io.github.laplacedemon.asyncmysql.resultset.MySQLResultPacket;
 import io.netty.channel.Channel;
-import sjq.light.async.mysql.reactor_tmp.MySQLResultPacket;
 
 public class IOSession {
 	private Status status;

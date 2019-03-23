@@ -6,6 +6,7 @@ import java.util.List;
 import io.github.laplacedemon.asyncmysql.network.AttributeMap;
 import io.github.laplacedemon.asyncmysql.network.ByteBufAdapter;
 import io.github.laplacedemon.asyncmysql.resultset.AsyncResultSet;
+import io.github.laplacedemon.asyncmysql.resultset.MySQLResultPacket;
 import io.github.laplacedemon.mysql.protocol.buffer.InputMySQLBuffer;
 import io.github.laplacedemon.mysql.protocol.packet.response.resultset.FieldPacket;
 import io.github.laplacedemon.mysql.protocol.packet.response.resultset.ResultSetHeaderPacket;
@@ -14,7 +15,6 @@ import io.github.laplacedemon.mysql.protocol.util.MySQLByteUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
-import sjq.light.async.mysql.reactor_tmp.MySQLResultPacket;
 
 public class CommandDecoder extends ByteToMessageDecoder {
 	private final int packetHeadLength = 4;

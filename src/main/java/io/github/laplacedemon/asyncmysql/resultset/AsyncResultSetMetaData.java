@@ -5,7 +5,6 @@ import java.sql.SQLException;
 import javax.sql.RowSetMetaData;
 
 import io.github.laplacedemon.mysql.protocol.packet.response.resultset.FieldPacket;
-import sjq.light.async.mysql.reactor_tmp.MySQLResultPacket;
 
 public class AsyncResultSetMetaData implements RowSetMetaData {
 	private MySQLResultPacket resultMySQLPacket;

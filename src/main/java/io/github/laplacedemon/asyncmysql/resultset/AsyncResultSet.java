@@ -25,7 +25,6 @@ import java.util.Map;
 
 import io.github.laplacedemon.mysql.protocol.packet.response.resultset.FieldPacket;
 import io.github.laplacedemon.mysql.protocol.packet.response.resultset.RowPacket;
-import sjq.light.async.mysql.reactor_tmp.MySQLResultPacket;
 
 public class AsyncResultSet implements ResultSet{
 	private MySQLResultPacket resultMySQLPacket;

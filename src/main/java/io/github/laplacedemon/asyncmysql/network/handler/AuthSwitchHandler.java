@@ -8,6 +8,7 @@ import io.github.laplacedemon.asyncmysql.ServerInfo;
 import io.github.laplacedemon.asyncmysql.Status;
 import io.github.laplacedemon.asyncmysql.network.AttributeMap;
 import io.github.laplacedemon.asyncmysql.network.OutputMySQLBufferAdapter;
+import io.github.laplacedemon.asyncmysql.network.buffer.ByteBufferMySQLMessage;
 import io.github.laplacedemon.mysql.protocol.buffer.MySQLMessage;
 import io.github.laplacedemon.mysql.protocol.packet.auth.AuthMoreDataPacket;
 import io.github.laplacedemon.mysql.protocol.packet.auth.AuthSwitchRequestPacket;
@@ -15,7 +16,6 @@ import io.github.laplacedemon.mysql.protocol.packet.auth.AuthSwitchResponsePacke
 import io.github.laplacedemon.mysql.protocol.util.MySQLByteUtils;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import sjq.light.async.mysql.reactor_tmp.ByteBufferMySQLMessage;
 
 public class AuthSwitchHandler extends ChannelInboundHandlerAdapter {
 	private final int headPacketLength = 4;

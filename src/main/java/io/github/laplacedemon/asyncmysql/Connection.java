@@ -5,13 +5,13 @@ import java.sql.ResultSet;
 import java.util.function.Consumer;
 
 import io.github.laplacedemon.asyncmysql.network.AttributeMap;
+import io.github.laplacedemon.asyncmysql.network.buffer.ByteBufferMySQLMessage;
 import io.github.laplacedemon.asyncmysql.resultset.AsyncPreparedStatement;
+import io.github.laplacedemon.asyncmysql.resultset.MySQLResultPacket;
 import io.github.laplacedemon.mysql.protocol.packet.command.CommandQueryPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
-import sjq.light.async.mysql.reactor_tmp.ByteBufferMySQLMessage;
-import sjq.light.async.mysql.reactor_tmp.MySQLResultPacket;
 
 public class Connection {
 	private Channel channel;

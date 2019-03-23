@@ -4,6 +4,7 @@ import io.github.laplacedemon.asyncmysql.Config;
 import io.github.laplacedemon.asyncmysql.Status;
 import io.github.laplacedemon.asyncmysql.network.AttributeMap;
 import io.github.laplacedemon.asyncmysql.network.OutputMySQLBufferAdapter;
+import io.github.laplacedemon.asyncmysql.network.buffer.ByteBufferMySQLMessage;
 import io.github.laplacedemon.mysql.protocol.buffer.MySQLMessage;
 import io.github.laplacedemon.mysql.protocol.commons.CapabilityFlag;
 import io.github.laplacedemon.mysql.protocol.packet.auth.AuthPacket;
@@ -11,7 +12,6 @@ import io.github.laplacedemon.mysql.protocol.packet.auth.HandShakeV10Packet;
 import io.github.laplacedemon.mysql.protocol.util.MySQLByteUtils;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import sjq.light.async.mysql.reactor_tmp.ByteBufferMySQLMessage;
 
 public class HandshakeHandler extends ChannelInboundHandlerAdapter {
 	private final int headPacketLength = 4;

@@ -69,7 +69,7 @@ public class CommandDecoder extends ByteToMessageDecoder {
 						FieldPacket fieldPacket = new FieldPacket();
 						fieldPacket.read(inputMySQLBuffer);
 						resultPacketList.fieldPacketList().add(fieldPacket);
-						System.out.println("读了N个列：" + resultPacketList.fieldPacketList().size());
+//						System.out.println("读了N个列：" + resultPacketList.fieldPacketList().size());
 						return;
 					}
 
@@ -77,7 +77,7 @@ public class CommandDecoder extends ByteToMessageDecoder {
 					if (responseType == (byte) 254) {
 						byte[] bs = new byte[packetLength];
 						inputBuffer.readBytes(bs);
-						System.out.println("读完了！");
+//						System.out.println("读完了！");
 						// 所有数据都读完，重新开始消费数据。
 
 						ResultSet resultSet = new AsyncResultSet(resultPacketList);
@@ -90,7 +90,7 @@ public class CommandDecoder extends ByteToMessageDecoder {
 					RowPacket rowPacket = new RowPacket((int) (resultPacketList.resultSetHeaderPacket().getFiledCount()));
 					rowPacket.read(inputMySQLBuffer);
 					resultPacketList.rowPacketList().add(rowPacket);
-					System.out.println("读取到的行：" + resultPacketList.rowPacketList().size());
+//					System.out.println("读取到的行：" + resultPacketList.rowPacketList().size());
 					return;
 				}
 			}

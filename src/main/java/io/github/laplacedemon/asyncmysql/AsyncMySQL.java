@@ -39,7 +39,7 @@ public class AsyncMySQL {
 	
 	public void connect(Consumer<Connection> co) {
 		ioReactor.connect(this.config , (Channel channel) -> {
-			System.out.println("TCP连接成功");
+//			System.out.println("TCP连接成功");
 			AttributeMap.ioSession(channel).setHandshakeSuccessCallback(co);
 		});
 	}
@@ -69,7 +69,7 @@ public class AsyncMySQL {
 		CountDownLatch cdl = new CountDownLatch(cap);
 		for(int i = 0; i < cap; i++) {
 			this.connect(con -> {
-				System.out.println("新连接已创建");
+//				System.out.println("新连接已创建");
 				cp.put(con);
 				cdl.countDown();
 			});
@@ -83,7 +83,7 @@ public class AsyncMySQL {
 		AtomicInteger ai = new AtomicInteger(cap);
 		for(int i = 0; i < cap; i++) {
 			this.connect(con -> {
-				System.out.println("新连接已创建");
+//				System.out.println("新连接已创建");
 				cp.put(con);
 				int count = ai.decrementAndGet();
 				if(count == 0) {

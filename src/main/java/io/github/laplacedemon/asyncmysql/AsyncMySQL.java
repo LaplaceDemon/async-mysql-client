@@ -2,6 +2,8 @@ package io.github.laplacedemon.asyncmysql;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 import io.github.laplacedemon.asyncmysql.network.AttributeMap;
@@ -20,7 +22,7 @@ public class AsyncMySQL {
 	 * @throws UnknownHostException
 	 * @throws IOException
 	 */
-	public Connection connect()  {
+	public Connection connect() {
 //		SocketAddress saddr = new InetSocketAddress(config.getServerAddress(), config.getPort());
 //		SocketChannel socketChannel = SocketChannel.open();
 //		socketChannel.connect(saddr);
@@ -60,6 +62,38 @@ public class AsyncMySQL {
 
 	public void start() {
 		this.ioReactor.run();
+	}
+
+	public ConnectionPool createPool(final int cap) throws InterruptedException {
+		ConnectionPool cp = new ConnectionPool(cap);
+		CountDownLatch cdl = new CountDownLatch(cap);
+		for(int i = 0; i < cap; i++) {
+			this.connect(con -> {
+				System.out.println("新连接已创建");
+				cp.put(con);
+				cdl.countDown();
+			});
+		}
+		cdl.await();
+		return cp;
+	}
+
+	public void createPool(final int cap, final Consumer<ConnectionPool> co) {
+		final ConnectionPool cp = new ConnectionPool(cap);
+		AtomicInteger ai = new AtomicInteger(cap);
+		for(int i = 0; i < cap; i++) {
+			this.connect(con -> {
+				System.out.println("新连接已创建");
+				cp.put(con);
+				int count = ai.decrementAndGet();
+				if(count == 0) {
+					// 开启异步任务，执行回调
+					ioReactor.execute(()->{
+						co.accept(cp);
+					});
+				}
+			});
+		}
 	}
 	
 	/*

@@ -1,6 +1,7 @@
 package io.github.laplacedemon.asyncmysql.network;
 
 import java.sql.ResultSet;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import io.github.laplacedemon.asyncmysql.Config;
@@ -23,8 +24,11 @@ public class IOSession {
 	private final Channel channel;
 	private final Config config;
 	private final ServerInfo serverInfo;
+	
 	private Consumer<Connection> handshakeSuccessCallback;
-	private Consumer<ResultSet> commandResultCallback;
+	private BiConsumer<Long, Long> updateResultCallback;
+	private Consumer<ResultSet> queryResultCallback;
+	
 	private MySQLResultPacket commandResultPacket;
 	
 	public IOSession(final Channel channel, final Config config) {
@@ -76,12 +80,12 @@ public class IOSession {
 		return config;
 	}
 
-	public void setCommandResultCallback(Consumer<ResultSet> co) {
-		this.commandResultCallback = co;
+	public void setQueryResultCallback(Consumer<ResultSet> co) {
+		this.queryResultCallback = co;
 	}
 
-	public Consumer<ResultSet> getCommandResultCallback() {
-		return commandResultCallback;
+	public Consumer<ResultSet> getQueryResultCallback() {
+		return queryResultCallback;
 	}
 
 	public void setResultPacketList(MySQLResultPacket commandResultPacket) {
@@ -90,6 +94,14 @@ public class IOSession {
 
 	public MySQLResultPacket commandResultPacket() {
 		return commandResultPacket;
+	}
+	
+	public void setUpdateResultCallback(BiConsumer<Long, Long> co) {
+		this.updateResultCallback = co;
+	}
+	
+	public BiConsumer<Long, Long> getUpdateResultCallback() {
+		return this.updateResultCallback;
 	}
 	
 }

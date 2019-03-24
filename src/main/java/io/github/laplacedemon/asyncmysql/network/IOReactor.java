@@ -37,7 +37,6 @@ public class IOReactor {
                 }
             });
 	}
-	
 
 	public void connect(final Config config, final Consumer<Channel> co) {
 		Objects.requireNonNull(co);
@@ -48,7 +47,6 @@ public class IOReactor {
             @Override
             public void operationComplete(ChannelFuture channelFuture) throws Exception {
                 if (future.isSuccess()) {
-                    System.out.println("连接服务器成功");
                     Channel channel = future.channel();
                     Attribute<IOSession> attr = channel.attr(AttributeMap.IOSESSION_KEY);
                     attr.setIfAbsent(new IOSession(channel, config));
@@ -66,10 +64,13 @@ public class IOReactor {
 		while(true) {
 			try {
 				this.bootstrap.config().group().awaitTermination(10000, TimeUnit.SECONDS);
-				System.err.println("循环");
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	public void execute(Runnable task) {
+		this.bootstrap.config().group().submit(task);
 	}
 }

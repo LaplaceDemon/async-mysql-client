@@ -13,7 +13,7 @@ import io.github.laplacedemon.asyncmysql.resultset.AsyncPreparedStatement;
 
 public class TestAsyncMySQL {
 	public final static void printResultSet(final long count, final long id) {
-		System.out.println("count : " + count + ", id : " + id);
+		System.out.println("count : " + count + ", insert id : " + id);
 	}
 	
 	public final static void printResultSet(final ResultSet resultset) {
@@ -65,16 +65,44 @@ public class TestAsyncMySQL {
 	}
 	
 	@Test
+	public void testUseDatabase() throws IOException, InterruptedException {
+		final String sql = "INSERT INTO t_student(name, age) VALUES ('xiaosha', 32)";
+		final AsyncMySQL asyncMySQL = AsyncMySQL.create("127.0.0.1", 3306,"root","shijiaqi1066", "testdb");
+		asyncMySQL.connect((Connection con) -> {
+			System.out.println("TCP连接成功且MySQL握手成功");
+			con.executeUpdate(sql, () -> {
+				System.out.println("执行完成！");
+			});
+		});
+		
+		asyncMySQL.start();
+	}
+	
+	@Test
 	public void executeUpdate() throws IOException, InterruptedException {
-		final String sql = "select 1+1,1+2,2+3,3+5";
+		final String sql = "INSERT INTO `testdb`.`t_student` (`name`, `age`) VALUES ('xiaoming04', '4')";
 		final AsyncMySQL asyncMySQL = AsyncMySQL.create("127.0.0.1", 3306,"root","shijiaqi1066");
 		asyncMySQL.connect((Connection con) -> {
 			System.out.println("TCP连接成功且MySQL握手成功");
-			AsyncPreparedStatement asyncPS = con.prepareStatement(sql);
-			con.executeUpdate(asyncPS, (Long count, Long id)->{
-				System.out.println("查询完成！");
+			con.executeUpdate(sql, (Long count, Long id)->{
+				System.out.println("执行完成！");
 				printResultSet(count, id);
-				
+			});
+		});
+		
+		asyncMySQL.start();
+	}
+	
+	@Test
+	public void testExecuteUpdateWithAsyncPreparedStatement() throws IOException, InterruptedException {
+		final String sql = "INSERT INTO `testdb`.`t_student` (`name`, `age`) VALUES (?, ?)";
+		final AsyncMySQL asyncMySQL = AsyncMySQL.create("127.0.0.1", 3306,"root","shijiaqi1066");
+		asyncMySQL.connect((Connection con) -> {
+			System.out.println("TCP连接成功且MySQL握手成功");
+			AsyncPreparedStatement asyncPS = con.prepareStatement(sql, "xiaoming5", 18);
+			con.executeUpdate(asyncPS, (Long count, Long id)->{
+				System.out.println("执行完成！");
+				printResultSet(count, id);
 			});
 		});
 		
@@ -119,7 +147,30 @@ public class TestAsyncMySQL {
 		
 		asyncMySQL.start();
 	}
-//	
+	
+	@Test
+	public void testTxn() throws IOException, InterruptedException {
+		final AsyncMySQL asyncMySQL = AsyncMySQL.create("127.0.0.1", 3306,"root","shijiaqi1066");
+		asyncMySQL.connect((Connection con) -> {
+			System.out.println("TCP连接成功且MySQL握手成功");
+			con.beginTxn(()-> {
+				con.executeUpdate("INSERT INTO `testdb`.`t_student` (`name`, `age`) VALUES ('xiaohong01', 12)", (Long count0, Long id0)->{
+					System.out.println("执行事物1完成！");
+					
+					con.executeUpdate("INSERT INTO `testdb`.`t_student` (`name`, `age`) VALUES ('xiaohong02', 13)",(Long count1, Long id1)-> {
+						System.out.println("执行事物2完成！");
+						con.endTxn(()->{
+							System.out.println("事物执行完毕");
+						});
+					});
+				});
+				
+			});
+		});
+		
+		asyncMySQL.start();
+	}
+	
 //	@Test
 //	public void testHandshake() throws IOException, InterruptedException {
 //		final AsyncMySQL asyncMySQL = AsyncMySQL.create("127.0.0.1", 3306,"root","shijiaqi1066");

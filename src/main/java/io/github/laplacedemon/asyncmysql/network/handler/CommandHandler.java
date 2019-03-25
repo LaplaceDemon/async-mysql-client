@@ -6,6 +6,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import io.github.laplacedemon.asyncmysql.network.AttributeMap;
+import io.github.laplacedemon.mysql.protocol.packet.response.ErrorPacket;
 import io.github.laplacedemon.mysql.protocol.packet.response.OKayPacket;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -13,7 +14,6 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 public class CommandHandler extends ChannelInboundHandlerAdapter {	
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-		
 		if(msg instanceof OKayPacket) {
 			OKayPacket ok = (OKayPacket)msg;
 			// callback
@@ -23,8 +23,10 @@ public class CommandHandler extends ChannelInboundHandlerAdapter {
 				BigInteger lastInsertId = ok.getLastInsertId();
 				updateResultCallback.accept(affectedRows.longValue(), lastInsertId.longValue());
 			}
-			
-		} else if(msg instanceof ResultSet) {
+		} else if (msg instanceof ErrorPacket) {
+			ErrorPacket error = (ErrorPacket)msg;
+			System.out.println("MySQL执行错误." + error.getErrorMesssage());
+		} else if (msg instanceof ResultSet) {
 			ResultSet resultSet = (ResultSet)msg;
 			// callback
 			Consumer<ResultSet> commandResultCallback = AttributeMap.ioSession(ctx).getQueryResultCallback();

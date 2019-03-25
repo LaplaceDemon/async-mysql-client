@@ -46,8 +46,8 @@ public class AuthSwitchHandler extends ChannelInboundHandlerAdapter {
 			responseAuthMoreDataPacket.setSequenceId((byte)(authSwitchRequestPacket.getSequenceId() + 1));
 			responseAuthMoreDataPacket.setStatus((byte)2);
 			responseAuthMoreDataPacket.autoSetLength();
-			System.out.println("将要写出数据：" + (responseAuthMoreDataPacket.getLength() + headPacketLength));
-			MySQLMessage message = new ByteBufferMySQLMessage(responseAuthMoreDataPacket.getLength() + headPacketLength);
+			System.out.println("将要写出数据：" + (responseAuthMoreDataPacket.getPacketBodyLength() + headPacketLength));
+			MySQLMessage message = new ByteBufferMySQLMessage(responseAuthMoreDataPacket.getPacketBodyLength() + headPacketLength);
 			responseAuthMoreDataPacket.write(message, outputMySQLBuffer);
 			
 			// 不再处理当前连接的io，但继续需要写数据。
@@ -81,7 +81,7 @@ public class AuthSwitchHandler extends ChannelInboundHandlerAdapter {
 		authSwitchResponsePacket1.setAuthPluginResponse(new String(encryptPassword,Charset.forName("ISO8859_1")));
 		authSwitchResponsePacket1.autoSetLength();
 		
-		MySQLMessage message = new ByteBufferMySQLMessage(authSwitchResponsePacket1.getLength() + headPacketLength);
+		MySQLMessage message = new ByteBufferMySQLMessage(authSwitchResponsePacket1.getPacketBodyLength() + headPacketLength);
 		authSwitchResponsePacket1.write(message, outputMySQLBuffer);
 		
 		// 状态转换！

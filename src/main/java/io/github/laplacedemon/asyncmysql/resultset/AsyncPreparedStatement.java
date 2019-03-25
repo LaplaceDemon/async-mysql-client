@@ -60,7 +60,7 @@ public class AsyncPreparedStatement {
 					lastIndex = index + 1;
 				}
 				
-				if (lastIndex < this.sql.length() - 1) {
+				if (lastIndex <= this.sql.length() - 1) {
 					sb.append(this.sql.substring(lastIndex, this.sql.length()));
 				}
 				

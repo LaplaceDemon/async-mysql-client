@@ -8,6 +8,7 @@ import io.github.laplacedemon.asyncmysql.network.ByteBufAdapter;
 import io.github.laplacedemon.asyncmysql.resultset.AsyncResultSet;
 import io.github.laplacedemon.asyncmysql.resultset.MySQLResultPacket;
 import io.github.laplacedemon.mysql.protocol.buffer.InputMySQLBuffer;
+import io.github.laplacedemon.mysql.protocol.packet.response.ErrorPacket;
 import io.github.laplacedemon.mysql.protocol.packet.response.OKayPacket;
 import io.github.laplacedemon.mysql.protocol.packet.response.resultset.FieldPacket;
 import io.github.laplacedemon.mysql.protocol.packet.response.resultset.ResultSetHeaderPacket;
@@ -20,7 +21,6 @@ import io.netty.handler.codec.ByteToMessageDecoder;
 public class CommandDecoder extends ByteToMessageDecoder {
 	private final int packetHeadLength = 4;
 	private InputMySQLBuffer inputMySQLBuffer;
-//	private MySQLResultPacket resultPacketList;
 
 	public CommandDecoder() {
 		this.inputMySQLBuffer = new ByteBufAdapter();
@@ -31,13 +31,13 @@ public class CommandDecoder extends ByteToMessageDecoder {
 		inputMySQLBuffer.setBuffer(inputBuffer);
 		
 		if (packetHeadLength <= inputBuffer.readableBytes()) {
-			byte[] headPacket = new byte[packetHeadLength];
-			inputBuffer.getBytes(inputBuffer.readerIndex(), headPacket);
+			byte[] headHeadPacket = new byte[packetHeadLength];
+			inputBuffer.getBytes(inputBuffer.readerIndex(), headHeadPacket);
 
-			int packetLength = MySQLByteUtils.getPacketLength(headPacket);
-			byte sequenceId = headPacket[3];
+			int packetBodyLength = MySQLByteUtils.getPacketLength(headHeadPacket);
+			byte sequenceId = headHeadPacket[3];
 
-			if ((packetLength + packetHeadLength) <= inputBuffer.readableBytes()) {
+			if ((packetBodyLength + packetHeadLength) <= inputBuffer.readableBytes()) {
 				// 消息足够长，可以解码。读取，但不需要。
 				inputBuffer.skipBytes(packetHeadLength);
 				
@@ -45,13 +45,20 @@ public class CommandDecoder extends ByteToMessageDecoder {
 				// 读取一个，不消费掉数据。
 				byte responseType = inputBuffer.getByte(inputBuffer.readerIndex());
 				if (responseType == 0) {
-					System.out.println("OK");
 					OKayPacket okayPacket = new OKayPacket();
-					okayPacket.read(inputMySQLBuffer);
+					okayPacket.setPacketBodyLength(packetBodyLength);
+					okayPacket.setSequenceId(sequenceId);
+					okayPacket.read(inputMySQLBuffer, true);
 					out.add(okayPacket);
 					return ;
-				} else if (responseType == 0xff) {
-					System.out.println("有问题");
+				} else if (responseType == (byte)0xff) {
+					// 有问题也要把缓冲区消费低
+					ErrorPacket errorPacket = new ErrorPacket();
+					errorPacket.setPacketBodyLength(packetBodyLength);
+					errorPacket.setSequenceId(sequenceId);
+					errorPacket.read(inputMySQLBuffer, true);
+					out.add(errorPacket);
+					return ;
 				} else {
 					// 其他数据
 					if (resultPacketList.resultSetHeaderPacket() == null) {
@@ -59,7 +66,7 @@ public class CommandDecoder extends ByteToMessageDecoder {
 						inputBuffer.skipBytes(1);
 
 						ResultSetHeaderPacket resultSetHeaderPacket = new ResultSetHeaderPacket();
-						resultSetHeaderPacket.setLength(packetLength);
+						resultSetHeaderPacket.setPacketBodyLength(packetBodyLength);
 						resultSetHeaderPacket.setSequenceId(sequenceId);
 
 						long fieldCount = MySQLByteUtils.readLengthEncodedInteger(responseType, inputMySQLBuffer);
@@ -80,7 +87,7 @@ public class CommandDecoder extends ByteToMessageDecoder {
 
 					// EOF
 					if (responseType == (byte) 254) {
-						byte[] bs = new byte[packetLength];
+						byte[] bs = new byte[packetBodyLength];
 						inputBuffer.readBytes(bs);
 //						System.out.println("读完了！");
 						// 所有数据都读完，重新开始消费数据。

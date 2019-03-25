@@ -89,7 +89,7 @@ public class HandshakeHandler extends ChannelInboundHandlerAdapter {
 		AttributeMap.ioSession(ctx).serverInfo().setServerVersion(bytesServerVersion);
 
 		// write out
-		MySQLMessage message = new ByteBufferMySQLMessage(authPack.getLength() + headPacketLength);
+		MySQLMessage message = new ByteBufferMySQLMessage(authPack.getPacketBodyLength() + headPacketLength);
 		authPack.write(message, outputMySQLBuffer);
 		
 		// 进入验证阶段

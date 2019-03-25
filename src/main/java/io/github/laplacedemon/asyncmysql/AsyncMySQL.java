@@ -43,8 +43,8 @@ public class AsyncMySQL {
 			AttributeMap.ioSession(channel).setHandshakeSuccessCallback(co);
 		});
 	}
-
-	public static AsyncMySQL create(String addr, int port, String username, String password) throws IOException {
+	
+	public static AsyncMySQL create(String addr, int port, String username, String password, String database) throws IOException {
 		AsyncMySQL asyncMySQL = new AsyncMySQL();
 		
 		asyncMySQL.config = new Config();
@@ -52,12 +52,16 @@ public class AsyncMySQL {
 		asyncMySQL.config.setPort(port);
 		asyncMySQL.config.setUsername(username);
 		asyncMySQL.config.setPassword(password);
-//		asyncMySQL.sqlExecuteQueue = new ArrayBlockingQueue<>(10240);
+		asyncMySQL.config.setDatabase(database);
 		
 		IOReactor ioReactor = new IOReactor();
 		asyncMySQL.ioReactor = ioReactor;
 		
 		return asyncMySQL;
+	}
+
+	public static AsyncMySQL create(String addr, int port, String username, String password) throws IOException {
+		return create(addr, port, username, password, null);
 	}
 
 	public void start() {

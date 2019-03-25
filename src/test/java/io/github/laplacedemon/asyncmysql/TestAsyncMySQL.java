@@ -89,7 +89,7 @@ public class TestAsyncMySQL {
 		Config config = asyncMySQL.makeConfig("127.0.0.1", 3306,"root","shijiaqi1066");
 		asyncMySQL.connect(config, (Connection con) -> {
 			System.out.println("TCP连接成功且MySQL握手成功");
-			con.executeUpdate(sql, (Long count, Long id)->{
+			con.executeUpdate(sql, (long count, long id)->{
 				System.out.println("执行完成！");
 				printResultSet(count, id);
 			});
@@ -106,7 +106,7 @@ public class TestAsyncMySQL {
 		asyncMySQL.connect(config, (Connection con) -> {
 			System.out.println("TCP连接成功且MySQL握手成功");
 			AsyncPreparedStatement asyncPS = con.prepareStatement(sql, "xiaoming5", 18);
-			con.executeUpdate(asyncPS, (Long count, Long id)->{
+			con.executeUpdate(asyncPS, (long count, long id)->{
 				System.out.println("执行完成！");
 				printResultSet(count, id);
 			});
@@ -164,10 +164,10 @@ public class TestAsyncMySQL {
 		asyncMySQL.connect(config, (Connection con) -> {
 			System.out.println("TCP连接成功且MySQL握手成功");
 			con.beginTxn(()-> {
-				con.executeUpdate("INSERT INTO `testdb`.`t_student` (`name`, `age`) VALUES ('xiaohong01', 12)", (Long count0, Long id0)->{
+				con.executeUpdate("INSERT INTO `testdb`.`t_student` (`name`, `age`) VALUES ('xiaohong01', 12)", (long count0, long id0)->{
 					System.out.println("执行事物1完成！");
 					
-					con.executeUpdate("INSERT INTO `testdb`.`t_student` (`name`, `age`) VALUES ('xiaohong02', 13)",(Long count1, Long id1)-> {
+					con.executeUpdate("INSERT INTO `testdb`.`t_student` (`name`, `age`) VALUES ('xiaohong02', 13)",(long count1, long id1)-> {
 						System.out.println("执行事物2完成！");
 						con.endTxn(()->{
 							System.out.println("事物执行完毕");

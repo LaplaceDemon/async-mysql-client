@@ -2,10 +2,10 @@ package io.github.laplacedemon.asyncmysql.network.handler;
 
 import java.math.BigInteger;
 import java.sql.ResultSet;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import io.github.laplacedemon.asyncmysql.network.AttributeMap;
+import io.github.laplacedemon.asyncmysql.util.BiLongLongConsumer;
 import io.github.laplacedemon.mysql.protocol.packet.response.ErrorPacket;
 import io.github.laplacedemon.mysql.protocol.packet.response.OKayPacket;
 import io.netty.channel.ChannelHandlerContext;
@@ -17,7 +17,7 @@ public class CommandHandler extends ChannelInboundHandlerAdapter {
 		if(msg instanceof OKayPacket) {
 			OKayPacket ok = (OKayPacket)msg;
 			// callback
-			BiConsumer<Long, Long> updateResultCallback = AttributeMap.ioSession(ctx).getUpdateResultCallback();
+			BiLongLongConsumer updateResultCallback = AttributeMap.ioSession(ctx).getUpdateResultCallback();
 			if(updateResultCallback != null) {
 				BigInteger affectedRows = ok.getAffectedRows();
 				BigInteger lastInsertId = ok.getLastInsertId();

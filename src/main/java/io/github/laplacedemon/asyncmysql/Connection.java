@@ -9,6 +9,7 @@ import io.github.laplacedemon.asyncmysql.network.AttributeMap;
 import io.github.laplacedemon.asyncmysql.network.buffer.ByteBufferMySQLMessage;
 import io.github.laplacedemon.asyncmysql.resultset.AsyncPreparedStatement;
 import io.github.laplacedemon.asyncmysql.resultset.MySQLResultPacket;
+import io.github.laplacedemon.asyncmysql.util.BiLongLongConsumer;
 import io.github.laplacedemon.mysql.protocol.packet.command.CommandQueryPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -54,11 +55,11 @@ public class Connection {
 		this.channel.writeAndFlush(buf);
 	}
 
-	public void executeUpdate(final AsyncPreparedStatement asyncPS, final BiConsumer<Long, Long> co) {
+	public void executeUpdate(final AsyncPreparedStatement asyncPS, final BiLongLongConsumer co) {
 		this.executeUpdate(asyncPS.getStatement(), co);
 	}
 	
-	public void executeUpdate(final String sql, final BiConsumer<Long, Long> co) {
+	public void executeUpdate(final String sql, final BiLongLongConsumer co) {
 		AttributeMap.ioSession(channel).setUpdateResultCallback(co);
 		AttributeMap.ioSession(channel).setQueryResultCallback(null);
 		AttributeMap.ioSession(channel).setResultPacketList(new MySQLResultPacket());
@@ -79,7 +80,7 @@ public class Connection {
 	}
 	
 	public void executeUpdate(final String sql, final Runnable runnable) {
-		final BiConsumer<Long, Long> co = (Long count, Long id) -> {
+		final BiLongLongConsumer co = (long count, long id) -> {
 			runnable.run();
 		};
 		
@@ -87,13 +88,13 @@ public class Connection {
 	}
 	
 	public void beginTxn(Runnable runnable) {
-		this.executeUpdate("SET AUTOCOMMIT=0", (Long count, Long id)->{
+		this.executeUpdate("SET AUTOCOMMIT=0", (long count, long id)->{
 			runnable.run();
 		});
 	}
 	
 	public void endTxn(Runnable runnable) {
-		this.executeUpdate("SET AUTOCOMMIT=1", (Long count, Long id)->{
+		this.executeUpdate("SET AUTOCOMMIT=1", (long count, long id)->{
 			runnable.run();
 		});
 	}

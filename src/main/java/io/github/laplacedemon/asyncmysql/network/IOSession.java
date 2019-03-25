@@ -17,6 +17,7 @@ import io.github.laplacedemon.asyncmysql.network.handler.HandshakeHandler;
 import io.github.laplacedemon.asyncmysql.network.handler.MoreAuthDecoder;
 import io.github.laplacedemon.asyncmysql.network.handler.MoreAuthHandler;
 import io.github.laplacedemon.asyncmysql.resultset.MySQLResultPacket;
+import io.github.laplacedemon.asyncmysql.util.BiLongLongConsumer;
 import io.netty.channel.Channel;
 
 public class IOSession {
@@ -26,7 +27,7 @@ public class IOSession {
 	private final ServerInfo serverInfo;
 	
 	private Consumer<Connection> handshakeSuccessCallback;
-	private BiConsumer<Long, Long> updateResultCallback;
+	private BiLongLongConsumer updateResultCallback;
 	private Consumer<ResultSet> queryResultCallback;
 	
 	private MySQLResultPacket commandResultPacket;
@@ -96,11 +97,11 @@ public class IOSession {
 		return commandResultPacket;
 	}
 	
-	public void setUpdateResultCallback(BiConsumer<Long, Long> co) {
+	public void setUpdateResultCallback(BiLongLongConsumer co) {
 		this.updateResultCallback = co;
 	}
 	
-	public BiConsumer<Long, Long> getUpdateResultCallback() {
+	public BiLongLongConsumer getUpdateResultCallback() {
 		return this.updateResultCallback;
 	}
 	

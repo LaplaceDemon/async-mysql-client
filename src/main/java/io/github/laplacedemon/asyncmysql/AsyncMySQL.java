@@ -12,68 +12,73 @@ import io.netty.channel.Channel;
 
 public class AsyncMySQL {
 	private IOReactor ioReactor;
-	private Config config;
-//	private IOSession ioSession;
-//	private BlockingQueue<ExecuteTask> sqlExecuteQueue;
+	
+//	/**
+//	 * get a tcp connection then handshake to mysql.
+//	 * @return
+//	 * @throws InterruptedException 
+//	 * @throws UnknownHostException
+//	 * @throws IOException
+//	 */
+//	public Connection connect(final Config config) throws InterruptedException {
+//		final CountDownLatch cdl = new CountDownLatch(1);
+//		final Connection connection;
+//		ioReactor.connect(config , (Channel channel) -> {
+//			AttributeMap.ioSession(channel).setHandshakeSuccessCallback(con->{
+//				cdl.countDown();
+//				connection = con;
+//			});
+//		});
+//		cdl.await();
+//		return connection;
+//	}
 	
 	/**
 	 * get a tcp connection then handshake to mysql.
-	 * @return
-	 * @throws UnknownHostException
-	 * @throws IOException
 	 */
-	public Connection connect() {
-//		SocketAddress saddr = new InetSocketAddress(config.getServerAddress(), config.getPort());
-//		SocketChannel socketChannel = SocketChannel.open();
-//		socketChannel.connect(saddr);
-//		socketChannel.finishConnect();
-//		this.eventData = this.ioReactor.register(socketChannel);
-		
-		// connect
-//		final SocketChannel sc = SocketChannelFactory.createNewConnection("www.baidu.com", 80);
-//		ioReactor.registerConnect(sc);
-		
-//		ioReactor.connect();
-		return null;
-	}
-	
-	public void connect(Consumer<Connection> co) {
-		ioReactor.connect(this.config , (Channel channel) -> {
+	public void connect(final Config config, Consumer<Connection> co) {
+		ioReactor.connect(config , (Channel channel) -> {
 //			System.out.println("TCP连接成功");
 			AttributeMap.ioSession(channel).setHandshakeSuccessCallback(co);
 		});
 	}
 	
-	public static AsyncMySQL create(String addr, int port, String username, String password, String database) throws IOException {
+	public static AsyncMySQL create() throws IOException {
 		AsyncMySQL asyncMySQL = new AsyncMySQL();
-		
-		asyncMySQL.config = new Config();
-		asyncMySQL.config.setServerAddress(addr);
-		asyncMySQL.config.setPort(port);
-		asyncMySQL.config.setUsername(username);
-		asyncMySQL.config.setPassword(password);
-		asyncMySQL.config.setDatabase(database);
 		
 		IOReactor ioReactor = new IOReactor();
 		asyncMySQL.ioReactor = ioReactor;
 		
 		return asyncMySQL;
 	}
+	
+	public Config makeConfig(String addr, int port, String username, String password, String database) {
+		Config config = new Config();config.setServerAddress(addr);
+		config.setPort(port);
+		config.setUsername(username);
+		config.setPassword(password);
+		config.setDatabase(database);
+		
+		return makeConfig(addr, port, username, password);
+	}
+	
+	public Config makeConfig(String addr, int port, String username, String password) {
+		return makeConfig(addr, port, username, password, null);
+	}
 
 	public static AsyncMySQL create(String addr, int port, String username, String password) throws IOException {
-		return create(addr, port, username, password, null);
+		return create();
 	}
 
 	public void start() {
 		this.ioReactor.run();
 	}
 
-	public ConnectionPool createPool(final int cap) throws InterruptedException {
+	public ConnectionPool createPool(final Config config, final int cap) throws InterruptedException {
 		ConnectionPool cp = new ConnectionPool(cap);
 		CountDownLatch cdl = new CountDownLatch(cap);
 		for(int i = 0; i < cap; i++) {
-			this.connect(con -> {
-//				System.out.println("新连接已创建");
+			this.connect(config, con -> {
 				cp.put(con);
 				cdl.countDown();
 			});
@@ -82,11 +87,11 @@ public class AsyncMySQL {
 		return cp;
 	}
 
-	public void createPool(final int cap, final Consumer<ConnectionPool> co) {
+	public void createPool(final Config config ,final int cap, final Consumer<ConnectionPool> co) {
 		final ConnectionPool cp = new ConnectionPool(cap);
 		AtomicInteger ai = new AtomicInteger(cap);
 		for(int i = 0; i < cap; i++) {
-			this.connect(con -> {
+			this.connect(config, con -> {
 //				System.out.println("新连接已创建");
 				cp.put(con);
 				int count = ai.decrementAndGet();
@@ -99,69 +104,5 @@ public class AsyncMySQL {
 			});
 		}
 	}
-	
-	/*
-	public void execute(String sql, ExecuteCallback callback) {
-		if(sql == null || sql.length() == 0) {
-			throw new IllegalArgumentException();
-		}
-		
-		System.out.println("发送数据");
-		
-//		if(this.eventData.getStatus()!= Status.HandShakeing || this.eventData.getStatus()!=Status.Authing) {
-//			SelectionKey selectionKey = this.eventData.getSelectionKey();
-//			if((selectionKey.interestOps() & SelectionKey.OP_WRITE) == 0) {
-//				selectionKey.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
-//			}
-//		}
-		
-		SelectionKey selectionKey = this.eventData.getSelectionKey();
-		if((selectionKey.interestOps() & SelectionKey.OP_WRITE) == 0) {
-			selectionKey.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
-		}
-		
-		try {
-			sqlExecuteQueue.put(new ExecuteTask(sql, callback));
-		} catch (InterruptedException e) {
-			// put阻塞时候，若阶段则抛出异常。
-			e.printStackTrace();
-		}
-		
-		this.eventData.setExecuteCallback(callback);
-		this.eventData.setStatus(Status.Commanding);
-		
-		CommandQueryPacket command = new CommandQueryPacket();
-		command.setSql(sql);
-		command.setSequenceId((byte)0);
-		command.autoSetLength();
-		
-		MySQLMessage mySQLMessage = new ByteBufferMySQLMessage(command.getLength() + 4);
-		command.write(mySQLMessage, this.eventData.outputMySQLBuffer());
-	}
-	 */	
-
-	/*
-	public void execute(AsyncPreparedStatement preparedStatement, ExecuteCallback callback) {
-		String statementSQL = preparedStatement.getStatement();
-		this.execute(statementSQL, callback);
-	}
-
-	public void start() throws IOException {
-		ioReactor.run();
-	}
-
-	public void startInNewThread() {
-		Thread t = new Thread(()-> {
-			try {
-				ioReactor.run();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		});
-		
-		t.start();
-	}
-	*/
-
 	
 }

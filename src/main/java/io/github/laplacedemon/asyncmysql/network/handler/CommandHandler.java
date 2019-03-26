@@ -12,13 +12,14 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
 public class CommandHandler extends ChannelInboundHandlerAdapter {	
+	
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 		if(msg instanceof OKayPacket) {
 			OKayPacket ok = (OKayPacket)msg;
 			// callback
 			BiLongLongConsumer updateResultCallback = AttributeMap.ioSession(ctx).getUpdateResultCallback();
-			if(updateResultCallback != null) {
+			if (updateResultCallback != null) {
 				BigInteger affectedRows = ok.getAffectedRows();
 				BigInteger lastInsertId = ok.getLastInsertId();
 				updateResultCallback.accept(affectedRows.longValue(), lastInsertId.longValue());
@@ -30,7 +31,7 @@ public class CommandHandler extends ChannelInboundHandlerAdapter {
 			ResultSet resultSet = (ResultSet)msg;
 			// callback
 			Consumer<ResultSet> commandResultCallback = AttributeMap.ioSession(ctx).getQueryResultCallback();
-			if(commandResultCallback != null) {
+			if (commandResultCallback != null) {
 				commandResultCallback.accept(resultSet);
 			}
 		}

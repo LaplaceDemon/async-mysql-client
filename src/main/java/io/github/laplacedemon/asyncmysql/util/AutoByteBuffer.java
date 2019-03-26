@@ -6,10 +6,10 @@ package io.github.laplacedemon.asyncmysql.util;
  *
  */
 public class AutoByteBuffer {
+	public static final int InitLen = 64;
 	private byte[] bs;
 	private int index;
 	private int length;
-	private static final int InitLen = 64;
 	
 	public AutoByteBuffer() {
 		this.bs = new byte[InitLen];

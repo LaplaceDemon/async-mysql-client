@@ -24,6 +24,7 @@ public class TestJDBC {
 	 */
 	
 	@Test
+	@Ignore
 	public void testInsert() throws SQLException {
 		String sql = "INSERT INTO `testdb`.`t_student` (`name`, `age`) VALUES ('xiaoming', '18')";
 		
@@ -39,6 +40,18 @@ public class TestJDBC {
 		jdbc.commit();
 		
 		jdbc.endTxn();
+		
+		jdbc.releaseConn();
+	}
+	
+	@Test
+	public void testQuerySimple() throws SQLException {
+		JDBCUtils jdbc = new JDBCUtils();
+		
+		jdbc.initConnection();
+		
+		Map<String, Object> results = jdbc.findSimpleResult("select 10+2", null);
+		System.out.println(results);
 		
 		jdbc.releaseConn();
 	}

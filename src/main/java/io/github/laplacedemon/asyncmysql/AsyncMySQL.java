@@ -43,7 +43,7 @@ public class AsyncMySQL {
 		});
 	}
 	
-	public static AsyncMySQL create() throws IOException {
+	public static AsyncMySQL create() {
 		AsyncMySQL asyncMySQL = new AsyncMySQL();
 		
 		IOReactor ioReactor = new IOReactor();

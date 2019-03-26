@@ -1,11 +1,6 @@
 package io.github.laplacedemon.asyncmysql.network.handler;
 
 import java.util.List;
-import java.util.function.Consumer;
-
-import io.github.laplacedemon.asyncmysql.Connection;
-import io.github.laplacedemon.asyncmysql.Status;
-import io.github.laplacedemon.asyncmysql.network.AttributeMap;
 import io.github.laplacedemon.asyncmysql.network.ByteBufAdapter;
 import io.github.laplacedemon.mysql.protocol.buffer.InputMySQLBuffer;
 import io.github.laplacedemon.mysql.protocol.packet.auth.AuthSwitchRequestPacket;
@@ -48,38 +43,24 @@ public class AuthSwitchDecoder extends ByteToMessageDecoder {
 					int responseType = inputMySQLBuffer.read();
 					if (responseType == 0) {
 						OKayPacket okPacket = new OKayPacket();
+						okPacket.setPacketBodyLength(packetBodyLength);
+						okPacket.setSequenceId(sequenceId);
 						okPacket.read(inputMySQLBuffer);
-						
-						Consumer<Connection> handshakeSuccessCallback = AttributeMap.ioSession(ctx).getHandshakeSuccessCallback();
-						final Connection connection = new Connection(ctx.channel());
-						handshakeSuccessCallback.accept(connection);
-						AttributeMap.ioSession(ctx).gotoStatus(Status.Commanding);
-					} else if (responseType == 0xff) {
+						out.add(okPacket);
+						return ;
+					} else if (responseType == (byte)0xff) {
 						ErrorPacket errorPacket = new ErrorPacket();
+						errorPacket.setPacketBodyLength(packetBodyLength);
+						errorPacket.setSequenceId(sequenceId);
 						errorPacket.read(inputMySQLBuffer);
-						System.out.println("错误，握手失败");
+						out.add(errorPacket);
+						return ;
 					} else {
 						System.out.println("错误，握手失败，可能是协议解析问题");
 						inputMySQLBuffer.skip(packetBodyLength - 1);
 					}
 				}
 			}
-				/*
-				byte statusByte = inputBuffer.readByte();
-				AuthMoreDataPacket authMoreDataPacket = new AuthMoreDataPacket();
-				authMoreDataPacket.setStatus(statusByte);
-				
-				byte[] bs = inputMySQLBuffer.readNBytes(packetLength - 1);
-				authMoreDataPacket.setAuthMethodData(new String(bs));
-				*/
-//			}
-//
-//			if ((packetLength + headPacketLength) <= inputBuffer.readableBytes()) {
-//				AuthSwitchResponsePacket authSwitchResponsePacket0 = new AuthSwitchResponsePacket();
-//				authSwitchResponsePacket0.setLength(packetLength);
-//				authSwitchResponsePacket0.setSequenceId(sequenceId);
-//				authSwitchResponsePacket0.read(inputMySQLBuffer);
-//			}
 		}
 	}
 

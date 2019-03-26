@@ -34,7 +34,12 @@ public class ByteBufAdapter implements InputMySQLBuffer {
 
 	@Override
 	public byte[] readUtils(byte b) {
-		AutoByteBuffer sb = new AutoByteBuffer();
+		return readUtils(b, AutoByteBuffer.InitLen);
+	}
+	
+	@Override
+	public byte[] readUtils(byte b, int initBytes) {
+		AutoByteBuffer sb = new AutoByteBuffer(initBytes);
 		while(true) {
 			byte readByte = this.readByte();
 			sb.append(readByte);
@@ -51,7 +56,7 @@ public class ByteBufAdapter implements InputMySQLBuffer {
 
 	@Override
 	public int readInt() {
-		return byteBuf.readInt();
+		return byteBuf.readIntLE();
 	}
 
 	@Override
@@ -106,6 +111,5 @@ public class ByteBufAdapter implements InputMySQLBuffer {
 	public int readableBytes() {
 		return this.byteBuf.readableBytes();
 	}
-	
 
 }

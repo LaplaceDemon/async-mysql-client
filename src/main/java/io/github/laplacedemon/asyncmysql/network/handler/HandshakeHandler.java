@@ -1,5 +1,8 @@
 package io.github.laplacedemon.asyncmysql.network.handler;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.github.laplacedemon.asyncmysql.Config;
 import io.github.laplacedemon.asyncmysql.Status;
 import io.github.laplacedemon.asyncmysql.network.AttributeMap;
@@ -73,26 +76,41 @@ public class HandshakeHandler extends ChannelInboundHandlerAdapter {
 		authPack.setSequenceId((byte) (handShakeV10Packet.getSequenceId() + 1));
 		authPack.autoSetLength();
 		
-		// 设置服务器信息。
+		// set server info.
 		AttributeMap.ioSession(ctx).serverInfo().setSeed(seedBytes);
 		
+		// server version
 		String serverVersion = handShakeV10Packet.getServerVersion();
-		String[] splitServerVersion = serverVersion.split(".");
-		
-		byte[] bytesServerVersion = new byte[splitServerVersion.length];
-		for(int i = 0;i<splitServerVersion.length; i++) {
-			String strItem = splitServerVersion[i];
-			bytesServerVersion[i] = Byte.valueOf(strItem).byteValue();
+		StringBuilder sb = new StringBuilder();
+		List<Byte> bytesServerVersionList = new ArrayList<>();
+		for (int i = 0; i < serverVersion.length(); i++) {
+			char c = serverVersion.charAt(i);
+			if (c == 0) {
+				Byte value = Byte.valueOf(sb.toString());
+				bytesServerVersionList.add(value);
+				sb.setLength(0);
+				break ;
+			} else if (c == '.') {
+				Byte value = Byte.valueOf(sb.toString());
+				bytesServerVersionList.add(value);
+				sb.setLength(0);
+			} else {
+				sb.append(c);
+			}
 		}
 		
-		// 设置服务器信息。
+		byte[] bytesServerVersion = new byte[bytesServerVersionList.size()];
+		for(int i = 0; i < bytesServerVersion.length; i++) {
+			bytesServerVersion[i] = bytesServerVersionList.get(i);
+		}
+		
 		AttributeMap.ioSession(ctx).serverInfo().setServerVersion(bytesServerVersion);
 
 		// write out
 		MySQLMessage message = new ByteBufferMySQLMessage(authPack.getPacketBodyLength() + headPacketLength);
 		authPack.write(message, outputMySQLBuffer);
 		
-		// 进入验证阶段
+		// goto other status
 		AttributeMap.ioSession(ctx).gotoStatus(Status.AuthSwitch);
 	}
 	

@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import io.github.laplacedemon.asyncmysql.AsyncMySQL;
@@ -38,10 +39,17 @@ public class TestAsyncMySQL {
 		}
 	}
 	
+	private Config config;
+	private AsyncMySQL asyncMySQL;
+	
+	@Before
+	public void before() {
+		asyncMySQL = AsyncMySQL.create();
+		config = asyncMySQL.makeConfig("192.168.56.101", 3306,"root","123456");
+	}
+	
 	@Test
-	public void testAsyncConnect() throws IOException, InterruptedException {
-		final AsyncMySQL asyncMySQL = AsyncMySQL.create();
-		Config config = asyncMySQL.makeConfig("127.0.0.1", 3306,"root","shijiaqi1066");
+	public void testAsyncConnect() {
 		asyncMySQL.connect(config, (Connection con) -> {
 			System.out.println("TCP连接成功且MySQL握手成功");
 		});
@@ -52,8 +60,7 @@ public class TestAsyncMySQL {
 	@Test
 	public void executeQuery() throws IOException, InterruptedException {
 		final String sql = "select 1+1,1+2,2+3,3+5";
-		final AsyncMySQL asyncMySQL = AsyncMySQL.create();
-		Config config = asyncMySQL.makeConfig("127.0.0.1", 3306,"root","shijiaqi1066");
+		
 		asyncMySQL.connect(config, (Connection con) -> {
 			System.out.println("TCP连接成功且MySQL握手成功");
 			AsyncPreparedStatement asyncPS = con.prepareStatement(sql);
@@ -69,9 +76,7 @@ public class TestAsyncMySQL {
 	@Test
 	public void testUseDatabase() throws IOException, InterruptedException {
 		final String sql = "INSERT INTO t_student(name, age) VALUES ('xiaosha', 32)";
-		final AsyncMySQL asyncMySQL = AsyncMySQL.create();
 		
-		Config config = asyncMySQL.makeConfig("127.0.0.1", 3306,"root","shijiaqi1066", "testdb");
 		asyncMySQL.connect(config, (Connection con) -> {
 			System.out.println("TCP连接成功且MySQL握手成功");
 			con.executeUpdate(sql, () -> {
@@ -85,8 +90,7 @@ public class TestAsyncMySQL {
 	@Test
 	public void executeUpdate() throws IOException, InterruptedException {
 		final String sql = "INSERT INTO `testdb`.`t_student` (`name`, `age`) VALUES ('xiaoming04', '4')";
-		final AsyncMySQL asyncMySQL = AsyncMySQL.create();
-		Config config = asyncMySQL.makeConfig("127.0.0.1", 3306,"root","shijiaqi1066");
+		
 		asyncMySQL.connect(config, (Connection con) -> {
 			System.out.println("TCP连接成功且MySQL握手成功");
 			con.executeUpdate(sql, (long count, long id)->{
@@ -101,8 +105,7 @@ public class TestAsyncMySQL {
 	@Test
 	public void testExecuteUpdateWithAsyncPreparedStatement() throws IOException, InterruptedException {
 		final String sql = "INSERT INTO `testdb`.`t_student` (`name`, `age`) VALUES (?, ?)";
-		final AsyncMySQL asyncMySQL = AsyncMySQL.create();
-		Config config = asyncMySQL.makeConfig("127.0.0.1", 3306,"root","shijiaqi1066");
+		
 		asyncMySQL.connect(config, (Connection con) -> {
 			System.out.println("TCP连接成功且MySQL握手成功");
 			AsyncPreparedStatement asyncPS = con.prepareStatement(sql, "xiaoming5", 18);
@@ -118,8 +121,7 @@ public class TestAsyncMySQL {
 	@Test
 	public void testSyncCreateConnectPool() throws IOException, InterruptedException {
 		final String sql = "select 1+1,1+2,2+3,3+5";
-		final AsyncMySQL asyncMySQL = AsyncMySQL.create();
-		Config config = asyncMySQL.makeConfig("127.0.0.1", 3306,"root","shijiaqi1066");
+		
 		long t0 = System.currentTimeMillis();
 		final ConnectionPool cp = asyncMySQL.createPool(config, 10);
 		long t1 = System.currentTimeMillis();
@@ -138,8 +140,7 @@ public class TestAsyncMySQL {
 	@Test
 	public void testAsyncCreateConnectPool() throws IOException, InterruptedException {
 		final String sql = "select 1+1,1+2,2+3,3+5";
-		final AsyncMySQL asyncMySQL = AsyncMySQL.create();
-		Config config = asyncMySQL.makeConfig("127.0.0.1", 3306,"root","shijiaqi1066");
+		
 		final long t0 = System.currentTimeMillis();
 		asyncMySQL.createPool(config, 10, (ConnectionPool cp)->{
 			long t1 = System.currentTimeMillis();
@@ -159,8 +160,6 @@ public class TestAsyncMySQL {
 	
 	@Test
 	public void testTxn() throws IOException, InterruptedException {
-		final AsyncMySQL asyncMySQL = AsyncMySQL.create();
-		Config config = asyncMySQL.makeConfig("127.0.0.1", 3306,"root","shijiaqi1066");
 		asyncMySQL.connect(config, (Connection con) -> {
 			System.out.println("TCP连接成功且MySQL握手成功");
 			con.beginTxn(()-> {

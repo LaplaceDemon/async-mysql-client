@@ -18,11 +18,11 @@ public class JDBCUtils {
 	// 定义数据库的用户名
 	private final String USERNAME = "root";
 	// 定义数据库的密码
-	private final String PASSWORD = "shijiaqi1066";
+	private final String PASSWORD = "123456";
 	// 定义数据库的驱动信息
 	private final String DRIVER = "com.mysql.cj.jdbc.Driver";
 	// 定义访问数据库的地址
-	private final String URL = "jdbc:mysql://127.0.0.1:3306?useSSL=false&allowPublicKeyRetrieval=true";
+	private final String URL = "jdbc:mysql://192.168.56.101:3306?useSSL=false&allowPublicKeyRetrieval=true";
 
 	// 定义访问数据库的连接
 	private Connection connection;

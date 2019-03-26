@@ -1,7 +1,6 @@
 package io.github.laplacedemon.asyncmysql.network;
 
 import java.sql.ResultSet;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import io.github.laplacedemon.asyncmysql.Config;
@@ -56,10 +55,10 @@ public class IOSession {
 			channel.pipeline().remove(AuthSwitchDecoder.class);
 			channel.pipeline().remove(AuthSwitchHandler.class);
 			channel.pipeline().addLast(new CommandDecoder(), new CommandHandler());
-		} else if(this.status.equals(Status.MoreAuthing) && newStatus.equals(Status.Commanding)) {
+		} else if(this.status.equals(Status.MoreAuthing) && newStatus.equals(Status.AuthSwitch)) {
 			channel.pipeline().remove(MoreAuthDecoder.class);
 			channel.pipeline().remove(MoreAuthHandler.class);
-			channel.pipeline().addLast(new CommandDecoder(), new CommandHandler());
+			channel.pipeline().addLast(new AuthSwitchDecoder(), new AuthSwitchHandler());
 		}
 		
 		this.status = newStatus;

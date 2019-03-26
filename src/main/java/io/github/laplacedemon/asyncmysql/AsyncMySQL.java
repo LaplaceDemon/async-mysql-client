@@ -59,7 +59,7 @@ public class AsyncMySQL {
 		config.setPassword(password);
 		config.setDatabase(database);
 		
-		return makeConfig(addr, port, username, password);
+		return config;
 	}
 	
 	public Config makeConfig(String addr, int port, String username, String password) {

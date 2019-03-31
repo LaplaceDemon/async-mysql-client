@@ -110,6 +110,7 @@ asyncMySQL.connect(config, (Connection con) -> {
 
             con.executeUpdate("INSERT INTO `testdb`.`t_student` (`name`, `age`) VALUES ('xiaohong02', 13)",(long count1, long id1) -> {
                 System.out.println("Completion of transaction 2...");
+                
                 con.endTxn(()->{
                     System.out.println("End of transaction");
                 });

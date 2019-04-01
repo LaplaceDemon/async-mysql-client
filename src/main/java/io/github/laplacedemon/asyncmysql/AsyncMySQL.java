@@ -1,7 +1,6 @@
 package io.github.laplacedemon.asyncmysql;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -12,26 +11,6 @@ import io.netty.channel.Channel;
 
 public class AsyncMySQL {
 	private IOReactor ioReactor;
-	
-//	/**
-//	 * get a tcp connection then handshake to mysql.
-//	 * @return
-//	 * @throws InterruptedException 
-//	 * @throws UnknownHostException
-//	 * @throws IOException
-//	 */
-//	public Connection connect(final Config config) throws InterruptedException {
-//		final CountDownLatch cdl = new CountDownLatch(1);
-//		final Connection connection;
-//		ioReactor.connect(config , (Channel channel) -> {
-//			AttributeMap.ioSession(channel).setHandshakeSuccessCallback(con->{
-//				cdl.countDown();
-//				connection = con;
-//			});
-//		});
-//		cdl.await();
-//		return connection;
-//	}
 	
 	/**
 	 * get a tcp connection then handshake to mysql.

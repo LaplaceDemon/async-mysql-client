@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.github.laplacedemon</groupId>
 	<artifactId>async-mysql-client</artifactId>
-	<version>0.1.1</version>
+	<version>0.1.0</version>
 	<licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
@@ -31,7 +31,7 @@
 		<dependency>
 			<groupId>io.github.laplacedemon</groupId>
 			<artifactId>light-mysql-protocol</artifactId>
-			<version>0.1.0</version>
+			<version>0.1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>

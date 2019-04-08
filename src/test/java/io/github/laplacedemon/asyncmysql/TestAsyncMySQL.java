@@ -45,7 +45,7 @@ public class TestAsyncMySQL {
 	@Before
 	public void before() {
 		asyncMySQL = AsyncMySQL.create();
-		config = asyncMySQL.makeConfig("192.168.56.101", 3306,"root","123456");
+		config = asyncMySQL.makeConfig("192.168.56.101", 3306,"root","123456","testdb");
 	}
 	
 	@Test
@@ -56,6 +56,51 @@ public class TestAsyncMySQL {
 		
 		asyncMySQL.start();
 	}
+	
+	static final String createTableSql = "CREATE TABLE `t_student` (`id` INT(8) NOT NULL AUTO_INCREMENT, `name` VARCHAR(255) NULL,`age` VARCHAR(255) NULL, PRIMARY KEY (`id`)) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8";
+	static final String dropTableSql = "DROP TABLE `t_student`";
+	
+	@Test
+	public void TestCreateTable() throws IOException, InterruptedException {
+		asyncMySQL.connect(config, (Connection con) -> {
+			System.out.println("TCP连接成功且MySQL握手成功");
+			
+			con.executeUpdate(createTableSql, (long count, long id) -> {
+				printResultSet(count, id);
+			});
+		});
+		
+		asyncMySQL.start();
+	}
+	
+	@Test
+	public void TestDropTable() throws IOException, InterruptedException {
+		asyncMySQL.connect(config, (Connection con) -> {
+			System.out.println("TCP连接成功且MySQL握手成功");
+			
+			con.executeUpdate(dropTableSql, (long count, long id) -> {
+				printResultSet(count, id);
+			});
+		});
+		
+		asyncMySQL.start();
+	}
+	
+	@Test
+	public void TestCloseConnection() throws IOException, InterruptedException {
+		asyncMySQL.connect(config, (Connection con) -> {
+			System.out.println("TCP连接成功且MySQL握手成功");
+			
+			con.executeUpdate(dropTableSql, (long count, long id) -> {
+				printResultSet(count, id);
+				con.close(()->{
+				});
+			});
+		});
+		
+		asyncMySQL.start();
+	}
+	
 	
 	@Test
 	public void executeQuery() throws IOException, InterruptedException {

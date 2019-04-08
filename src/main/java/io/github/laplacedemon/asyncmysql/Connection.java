@@ -2,7 +2,6 @@ package io.github.laplacedemon.asyncmysql;
 
 import java.nio.ByteBuffer;
 import java.sql.ResultSet;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import io.github.laplacedemon.asyncmysql.network.AttributeMap;
@@ -95,6 +94,12 @@ public class Connection {
 	
 	public void endTxn(Runnable runnable) {
 		this.executeUpdate("SET AUTOCOMMIT=1", (long count, long id)->{
+			runnable.run();
+		});
+	}
+
+	public void close(Runnable runnable) {
+		this.executeUpdate("", (long count, long id)->{
 			runnable.run();
 		});
 	}

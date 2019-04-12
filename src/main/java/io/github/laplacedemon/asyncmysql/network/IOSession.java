@@ -28,8 +28,10 @@ public class IOSession {
 	private Consumer<Connection> handshakeSuccessCallback;
 	private BiLongLongConsumer updateResultCallback;
 	private Consumer<ResultSet> queryResultCallback;
+	private Consumer<Throwable> throwableConsumer;
 	
 	private MySQLResultPacket commandResultPacket;
+	private Runnable closeRunnable;
 	
 	public IOSession(final Channel channel, final Config config) {
 		this.channel = channel;
@@ -103,5 +105,21 @@ public class IOSession {
 	public BiLongLongConsumer getUpdateResultCallback() {
 		return this.updateResultCallback;
 	}
-	
+
+    public void setCloseRunnable(Runnable closeRunnable) {
+        this.closeRunnable = closeRunnable;
+    }
+
+    public Runnable getCloseRunnable() {
+        return closeRunnable;
+    }
+
+    public void setExecuteThrowableCallback(Consumer<Throwable> throwableConsumer) {
+        this.throwableConsumer = throwableConsumer;
+    }
+
+    public Consumer<Throwable> getThrowableConsumer() {
+        return throwableConsumer;
+    }
+    
 }

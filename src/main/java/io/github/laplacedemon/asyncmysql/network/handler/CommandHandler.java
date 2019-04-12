@@ -2,6 +2,7 @@ package io.github.laplacedemon.asyncmysql.network.handler;
 
 import java.math.BigInteger;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.function.Consumer;
 
 import io.github.laplacedemon.asyncmysql.network.AttributeMap;
@@ -13,6 +14,14 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 
 public class CommandHandler extends ChannelInboundHandlerAdapter {	
 	
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        // System.out.println("CommandHandler.channelInactive");
+        // 连接正常关闭。
+        Runnable closeRunnable = AttributeMap.ioSession(ctx).getCloseRunnable();
+        closeRunnable.run();
+    }
+    
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 		if(msg instanceof OKayPacket) {
@@ -26,7 +35,10 @@ public class CommandHandler extends ChannelInboundHandlerAdapter {
 			}
 		} else if (msg instanceof ErrorPacket) {
 			ErrorPacket error = (ErrorPacket)msg;
-			System.out.println("MySQL执行错误." + error.getErrorMesssage());
+			// callback
+			SQLException sqlException = new SQLException(error.getErrorMesssage());
+			Consumer<Throwable> throwableConsumer = AttributeMap.ioSession(ctx).getThrowableConsumer();
+			throwableConsumer.accept(sqlException);
 		} else if (msg instanceof ResultSet) {
 			ResultSet resultSet = (ResultSet)msg;
 			// callback

@@ -24,7 +24,7 @@ public class HandshakeHandler extends ChannelInboundHandlerAdapter {
 		this.outputMySQLBuffer = new OutputMySQLBufferAdapter();
 	}
 	
-	@Override
+    @Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 		outputMySQLBuffer.setContext(ctx);
 		HandShakeV10Packet handShakeV10Packet = (HandShakeV10Packet)msg;

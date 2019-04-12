@@ -32,18 +32,18 @@ public class AuthSwitchHandler extends ChannelInboundHandlerAdapter {
 			AuthSwitchRequestPacket authSwitchRequestPacket = (AuthSwitchRequestPacket)msg;
 			byte[] pluginNameData = authSwitchRequestPacket.getPluginName().getBytes();
 			if(Arrays.equals(pluginNameData, new byte[] {(byte)3})) {
-				System.out.println("第二阶段验证，3");
+//				System.out.println("第二阶段验证，3");
 				return ;
 			} else if(Arrays.equals(pluginNameData, new byte[] {(byte)4})) {
 				/**
 				 * mysql 重启后，机器第一次连接mysql就会发生该种校验
 				 */
-				System.out.println("第二阶段验证，4");
+//				System.out.println("第二阶段验证，4");
 				AuthMoreDataPacket responseAuthMoreDataPacket = new AuthMoreDataPacket();
 				responseAuthMoreDataPacket.setSequenceId((byte)(authSwitchRequestPacket.getSequenceId() + 1));
 				responseAuthMoreDataPacket.setStatus((byte)2);
 				responseAuthMoreDataPacket.autoSetLength();
-				System.out.println("将要写出数据：" + (responseAuthMoreDataPacket.getPacketBodyLength() + headPacketLength));
+//				System.out.println("将要写出数据：" + (responseAuthMoreDataPacket.getPacketBodyLength() + headPacketLength));
 				MySQLMessage message = new ByteBufferMySQLMessage(responseAuthMoreDataPacket.getPacketBodyLength() + headPacketLength);
 				responseAuthMoreDataPacket.write(message, outputMySQLBuffer);
 				

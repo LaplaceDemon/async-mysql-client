@@ -10,6 +10,7 @@ import io.github.laplacedemon.asyncmysql.resultset.AsyncPreparedStatement;
 import io.github.laplacedemon.asyncmysql.resultset.MySQLResultPacket;
 import io.github.laplacedemon.asyncmysql.util.BiLongLongConsumer;
 import io.github.laplacedemon.mysql.protocol.packet.command.CommandQueryPacket;
+import io.github.laplacedemon.mysql.protocol.packet.command.CommandQuitPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
@@ -34,25 +35,32 @@ public class Connection {
 		this.executeQuery(asyncPS.getStatement(), co);
 	}
 	
-	public void executeQuery(final String sql, final Consumer<ResultSet> co) {
-		AttributeMap.ioSession(channel).setUpdateResultCallback(null);
-		AttributeMap.ioSession(channel).setQueryResultCallback(co);
-		AttributeMap.ioSession(channel).setResultPacketList(new MySQLResultPacket());
-		
-		CommandQueryPacket command = new CommandQueryPacket();
-		
-		command.setSql(sql);
-		command.setSequenceId((byte)0);
-		command.autoSetLength();
-		
-		ByteBufferMySQLMessage mySQLMessage = new ByteBufferMySQLMessage(command.getPacketBodyLength() + 4);
-		command.write(mySQLMessage, null);
-		
-		ByteBuffer message = mySQLMessage.getMessage();
-		ByteBuf buf = Unpooled.wrappedBuffer(message.array());
-		
-		this.channel.writeAndFlush(buf);
+	public void executeQuery(final String sql, final Consumer<ResultSet> resultSetConsumer) {
+		executeQuery(sql, resultSetConsumer, (Throwable t)->{
+		    t.printStackTrace();
+		});
 	}
+	
+	public void executeQuery(final String sql, final Consumer<ResultSet> resultSetConsumer, final Consumer<Throwable> throwableConsumer) {
+        AttributeMap.ioSession(channel).setUpdateResultCallback(null);
+        AttributeMap.ioSession(channel).setQueryResultCallback(resultSetConsumer);
+        AttributeMap.ioSession(channel).setResultPacketList(new MySQLResultPacket());
+        AttributeMap.ioSession(channel).setExecuteThrowableCallback(throwableConsumer);
+        
+        CommandQueryPacket command = new CommandQueryPacket();
+        
+        command.setSql(sql);
+        command.setSequenceId((byte)0);
+        command.autoSetLength();
+        
+        ByteBufferMySQLMessage mySQLMessage = new ByteBufferMySQLMessage(command.getPacketBodyLength() + 4);
+        command.write(mySQLMessage, null);
+        
+        ByteBuffer message = mySQLMessage.getMessage();
+        ByteBuf buf = Unpooled.wrappedBuffer(message.array());
+        
+        this.channel.writeAndFlush(buf);
+    }
 
 	public void executeUpdate(final AsyncPreparedStatement asyncPS, final BiLongLongConsumer co) {
 		this.executeUpdate(asyncPS.getStatement(), co);
@@ -97,11 +105,19 @@ public class Connection {
 			runnable.run();
 		});
 	}
-
-	public void close(Runnable runnable) {
-		this.executeUpdate("", (long count, long id)->{
-			runnable.run();
-		});
+	
+	public void close(Runnable closeRunnable) {
+        AttributeMap.ioSession(channel).setCloseRunnable(closeRunnable);
+        
+        CommandQuitPacket command = new CommandQuitPacket();
+        
+        ByteBufferMySQLMessage mySQLMessage = new ByteBufferMySQLMessage(command.getPacketBodyLength() + 4);
+        command.write(mySQLMessage, null);
+        
+        ByteBuffer message = mySQLMessage.getMessage();
+        ByteBuf buf = Unpooled.wrappedBuffer(message.array());
+        
+        this.channel.writeAndFlush(buf);
 	}
 	
 }

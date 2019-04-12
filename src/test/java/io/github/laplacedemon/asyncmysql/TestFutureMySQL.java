@@ -1,10 +1,5 @@
 package io.github.laplacedemon.asyncmysql;
 
-import java.io.IOException;
-import java.sql.ResultSet;
-
-import org.junit.Test;
-
 public class TestFutureMySQL {
 	/*
 	@Test

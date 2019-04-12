@@ -91,11 +91,9 @@ public class CommandDecoder extends ByteToMessageDecoder {
 						inputBuffer.readBytes(bs);
 //						System.out.println("读完了！");
 						// 所有数据都读完，重新开始消费数据。
-
 						ResultSet resultSet = new AsyncResultSet(resultPacketList);
 						out.add(resultSet);
-
-						return;
+						return ;
 					}
 
 					// Row

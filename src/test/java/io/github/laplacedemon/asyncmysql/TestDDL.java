@@ -15,7 +15,7 @@ public class TestDDL {
     @Before
     public void before() {
         asyncMySQL = AsyncMySQL.create();
-        config = asyncMySQL.makeConfig("192.168.56.101", 3306,"root","123456","testdb");
+        config = asyncMySQL.makeConfig("127.0.0.1", 3306,"root","123456","testdb");
     }
     
     @Test
@@ -25,6 +25,10 @@ public class TestDDL {
             
             con.executeUpdate(createTableSql, (long count, long id) -> {
                 PrintUtil.printResultSet(count, id);
+                
+                con.close(() -> {
+                	System.out.println("关闭连接");
+                });
             });
         });
         

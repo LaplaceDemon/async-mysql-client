@@ -29,4 +29,15 @@ public class TestFail {
         
         asyncMySQL.start();
     }
+    
+    @Test
+    public void testFailAsyncConnect() throws IOException, InterruptedException {
+        asyncMySQL.connect(config, (Connection con) -> {
+        	System.out.println("连接成功");
+        }, (Throwable t)->{
+        	System.out.println(t);
+        });
+        
+        asyncMySQL.start();
+    }
 }

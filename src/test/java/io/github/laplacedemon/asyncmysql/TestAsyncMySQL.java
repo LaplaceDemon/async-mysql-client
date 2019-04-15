@@ -17,7 +17,7 @@ public class TestAsyncMySQL {
 	@Before
 	public void before() {
 		asyncMySQL = AsyncMySQL.create();
-		config = asyncMySQL.makeConfig("192.168.56.101", 3306,"root","123456","testdb");
+		config = asyncMySQL.makeConfig("127.0.0.1", 3306,"root","123456","testdb");
 	}
 	
 	@Test

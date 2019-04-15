@@ -17,9 +17,14 @@ public class AsyncMySQL {
 	 */
 	public void connect(final Config config, Consumer<Connection> co) {
 		ioReactor.connect(config , (Channel channel) -> {
-//			System.out.println("TCP连接成功");
 			AttributeMap.ioSession(channel).setHandshakeSuccessCallback(co);
 		});
+	}
+	
+	public void connect(final Config config, Consumer<Connection> co, Consumer<Throwable> throwableConsumer) {
+		ioReactor.connect(config , (Channel channel) -> {
+			AttributeMap.ioSession(channel).setHandshakeSuccessCallback(co);
+		} );
 	}
 	
 	public static AsyncMySQL create() {

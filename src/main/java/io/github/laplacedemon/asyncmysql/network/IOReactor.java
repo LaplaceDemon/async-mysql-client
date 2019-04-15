@@ -2,6 +2,7 @@ package io.github.laplacedemon.asyncmysql.network;
 
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import io.github.laplacedemon.asyncmysql.Config;
 import io.github.laplacedemon.asyncmysql.network.handler.HandshakeDecoder;
@@ -17,7 +18,6 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.Attribute;
-import io.netty.util.internal.shaded.org.jctools.queues.MessagePassingQueue.Consumer;
 
 public class IOReactor {
 	final EventLoopGroup group = new NioEventLoopGroup();
@@ -38,8 +38,13 @@ public class IOReactor {
             });
 	}
 
-	public void connect(final Config config, final Consumer<Channel> co) {
-		Objects.requireNonNull(co);
+	public void connect(final Config config, final Consumer<Channel> okConsumer) {
+        this.connect(config, okConsumer, config.getConnectThrowableConsumer());
+	}
+	
+	public void connect(final Config config, final Consumer<Channel> okConsumer, final Consumer<Throwable> failConsumer) {
+		Objects.requireNonNull(okConsumer);
+		Objects.requireNonNull(failConsumer);
 		
         final ChannelFuture future = this.bootstrap.connect(config.getServerAddress(), config.getPort());
         future.addListener(new ChannelFutureListener() {
@@ -50,11 +55,10 @@ public class IOReactor {
                     Channel channel = future.channel();
                     Attribute<IOSession> attr = channel.attr(AttributeMap.IOSESSION_KEY);
                     attr.setIfAbsent(new IOSession(channel, config));
-                    co.accept(channel);
+                    okConsumer.accept(channel);
                 } else {
-                    System.err.println("连接服务器失败");
-                    future.cause().printStackTrace();
-                    group.shutdownGracefully();         //关闭线程组
+                    Throwable cause = future.cause();
+                    failConsumer.accept(cause);
                 }
             }
         });
@@ -63,7 +67,7 @@ public class IOReactor {
 	public void run() {
 		while(true) {
 			try {
-				this.bootstrap.config().group().awaitTermination(10000, TimeUnit.SECONDS);
+				this.bootstrap.config().group().awaitTermination(1, TimeUnit.SECONDS);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -72,5 +76,9 @@ public class IOReactor {
 
 	public void execute(Runnable task) {
 		this.bootstrap.config().group().submit(task);
+	}
+	
+	public void close() {
+		this.group.shutdownGracefully();  //关闭线程组
 	}
 }

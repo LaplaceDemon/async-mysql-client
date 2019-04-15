@@ -1,11 +1,20 @@
 package io.github.laplacedemon.asyncmysql;
 
+import java.util.function.Consumer;
+
 public class Config {
 	private String serverAddress;
 	private int port;
 	private String username;
 	private String password;
 	private String database;
+	private Consumer<Throwable> connectThrowableConsumer;
+	
+	public Config() {
+		this.connectThrowableConsumer = (Throwable t)->{
+			t.printStackTrace();
+		};
+	}
 
 	public String getUsername() {
 		return username;
@@ -47,4 +56,12 @@ public class Config {
 		this.database = database;
 	}
 
+	public Consumer<Throwable> getConnectThrowableConsumer() {
+		return connectThrowableConsumer;
+	}
+
+	public void setConnectThrowableConsumer(Consumer<Throwable> connectThrowableConsumer) {
+		this.connectThrowableConsumer = connectThrowableConsumer;
+	}
+	
 }

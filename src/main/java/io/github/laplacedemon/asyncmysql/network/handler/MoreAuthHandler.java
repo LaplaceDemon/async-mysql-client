@@ -1,7 +1,7 @@
 package io.github.laplacedemon.asyncmysql.network.handler;
 
+import java.lang.reflect.Array;
 import java.nio.charset.Charset;
-import java.util.Arrays;
 
 import io.github.laplacedemon.asyncmysql.Config;
 import io.github.laplacedemon.asyncmysql.Status;
@@ -55,4 +55,36 @@ public class MoreAuthHandler extends ChannelInboundHandlerAdapter {
 		// 重新进入验证阶段
 		AttributeMap.ioSession(ctx).gotoStatus(Status.AuthSwitch);
 	}
+	
+	
+	/*
+	public static void main(String[] args) {
+        byte[] bs0 = new byte[]{(byte)8, (byte)1, (byte)2, (byte)3};
+        byte[] bs1 = new byte[]{(byte)8, (byte)1, (byte)2};
+        int compare = Arrays.compare(bs0, bs1);
+        System.out.println(compare);
+    }
+    */
+	
+}
+
+class Arrays {
+    public static int compare(byte[] a, byte[] b) {
+        if (a == b)
+            return 0;
+        
+        if (a == null || b == null)
+            return a == null ? -1 : 1;
+
+        int ml = Math.min(a.length, b.length);
+        for (int i = 0; i < ml; i++) {
+            if(a[i]!=b[i]) {
+                return a[i] - b[i];
+            }
+        }
+
+        return a.length - b.length;
+    }
+    
+    
 }

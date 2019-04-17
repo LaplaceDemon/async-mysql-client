@@ -33,7 +33,7 @@ public class TestFail {
     @Test
     public void testFailAsyncConnect() throws IOException, InterruptedException {
         asyncMySQL.connect(config, (Connection con) -> {
-        	System.out.println("连接成功");
+        	System.out.println("Successfully connected to MySQL.");
         }, (Throwable t)->{
         	System.out.println(t);
         });

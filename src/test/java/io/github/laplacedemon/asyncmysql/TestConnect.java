@@ -21,7 +21,7 @@ public class TestConnect {
     @Test
     public void testAsyncConnect() {
         asyncMySQL.connect(config, (Connection con) -> {
-            System.out.println("TCP连接成功且MySQL握手成功");
+            System.out.println("Successfully connected to MySQL.");
         });
         
         asyncMySQL.start();
@@ -30,10 +30,10 @@ public class TestConnect {
     @Test
     public void TestCloseConnection() throws IOException, InterruptedException {
         asyncMySQL.connect(config, (Connection con) -> {
-            System.out.println("TCP连接成功且MySQL握手成功");
+            System.out.println("Successfully connected to MySQL");
             
-            con.close(()->{
-                System.out.println("据说关闭了！");
+            con.close(() -> {
+                System.out.println("Connection is closed.");
             });
         });
         

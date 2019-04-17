@@ -21,13 +21,13 @@ public class TestDDL {
     @Test
     public void TestCreateTable() throws IOException, InterruptedException {
         asyncMySQL.connect(config, (Connection con) -> {
-            System.out.println("TCP连接成功且MySQL握手成功");
+            System.out.println("Successfully connected to MySQL.");
             
             con.executeUpdate(createTableSql, (long count, long id) -> {
                 PrintUtil.printResultSet(count, id);
                 
                 con.close(() -> {
-                	System.out.println("关闭连接");
+                	System.out.println("Connection is closed.");
                 });
             });
         });
@@ -38,7 +38,7 @@ public class TestDDL {
     @Test
     public void TestDropTable() throws IOException, InterruptedException {
         asyncMySQL.connect(config, (Connection con) -> {
-            System.out.println("TCP连接成功且MySQL握手成功");
+            System.out.println("Successfully connected to MySQL.");
             
             con.executeUpdate(dropTableSql, (long count, long id) -> {
                 PrintUtil.printResultSet(count, id);

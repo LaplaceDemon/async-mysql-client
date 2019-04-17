@@ -22,16 +22,38 @@ public class TestConnectionPool {
         final long t0 = System.currentTimeMillis();
         asyncMySQL.createPool(config, 10, (ConnectionPool cp)->{
             long t1 = System.currentTimeMillis();
-            System.out.println("线程池创建所花时间：" + (t1-t0)/1000 + "s");
+            System.out.println("Thread pool creation time spent: " + (t1-t0)/1000 + "s");
             cp.get(con -> {
-                System.out.println("空闲连接数：" + cp.getFreeConnectionCount());
+                System.out.println("Number of free connections: " + cp.getFreeConnectionCount());
                 con.executeQuery(sql, r -> {
                     PrintUtil.printResultSet(r);
                 });
             });
             
-            System.out.println("空闲连接数：" + cp.getFreeConnectionCount());
+            System.out.println("Number of free connections: " + cp.getFreeConnectionCount());
         });
+        
+        asyncMySQL.start();
+    }
+    
+    @Test
+    public void testSyncCreateConnectPool() throws IOException, InterruptedException {
+        final String sql = "select 1+1,1+2,2+3,3+5";
+        
+        long t0 = System.currentTimeMillis();
+        final ConnectionPool cp = asyncMySQL.createPool(config, 10);
+        long t1 = System.currentTimeMillis();
+        System.out.println("Thread pool creation time spent: " + (t1-t0)/1000 + "s");
+        
+        cp.get(con -> {
+            System.out.println("Number of free connections: " + cp.getFreeConnectionCount());
+            
+            con.executeQuery(sql, r -> {
+                PrintUtil.printResultSet(r);
+            });
+        });
+        
+        System.out.println("Number of free connections: " + cp.getFreeConnectionCount());
         
         asyncMySQL.start();
     }

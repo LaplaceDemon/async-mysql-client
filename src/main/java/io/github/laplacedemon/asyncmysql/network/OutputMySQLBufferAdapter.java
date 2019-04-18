@@ -17,7 +17,7 @@ public class OutputMySQLBufferAdapter implements OutputMySQLBuffer {
 	@Override
 	public void write(MySQLMessage message) {
 		ByteBuffer byteBuffer = ((ByteBufferMySQLMessage)message).getMessage();
-		ByteBuf nettyBuf = Unpooled.wrappedBuffer(byteBuffer.array()); 
+		ByteBuf nettyBuf = Unpooled.wrappedBuffer(byteBuffer); 
 		ctx.writeAndFlush(nettyBuf);
 	}
 

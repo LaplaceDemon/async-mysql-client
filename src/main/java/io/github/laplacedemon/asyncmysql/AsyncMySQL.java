@@ -6,9 +6,9 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
-import io.github.laplacedemon.AsyncPool;
 import io.github.laplacedemon.asyncmysql.network.AttributeMap;
 import io.github.laplacedemon.asyncmysql.network.IOReactor;
+import io.github.laplacedemon.asyncwait.AsyncPool;
 import io.netty.channel.Channel;
 
 public class AsyncMySQL {

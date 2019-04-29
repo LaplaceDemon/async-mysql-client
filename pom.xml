@@ -36,7 +36,7 @@
 		<dependency>
 			<groupId>io.github.laplacedemon</groupId>
 			<artifactId>async-wait</artifactId>
-			<version>0.2.0</version>
+			<version>0.3.0</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -97,6 +97,14 @@
 									<pattern>io.netty</pattern>
 									<shadedPattern>io.github.laplacedemon.asyncmysql.io.netty</shadedPattern>
 								</relocation>
+								<relocation>
+                                    <pattern>io.github.laplacedemon.mysql.protocol</pattern>
+                                    <shadedPattern>io.github.laplacedemon.asyncmysql.protocol</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>io.github.laplacedemon.async</pattern>
+                                    <shadedPattern>io.github.laplacedemon.asyncmysql.async</shadedPattern>
+                                </relocation>
 							</relocations>
 						</configuration>
 					</execution>

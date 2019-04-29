@@ -3,7 +3,7 @@ package io.github.laplacedemon.asyncmysql;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import io.github.laplacedemon.AsyncPool;
+import io.github.laplacedemon.asyncwait.AsyncPool;
 
 public class ConnectionPool {
 	private int capacity;

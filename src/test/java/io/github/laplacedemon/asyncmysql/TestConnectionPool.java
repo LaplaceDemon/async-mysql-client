@@ -23,10 +23,12 @@ public class TestConnectionPool {
         asyncMySQL.createPool(config, 10, (ConnectionPool cp)->{
             long t1 = System.currentTimeMillis();
             System.out.println("Thread pool creation time spent: " + (t1-t0)/1000 + "s");
-            cp.get(con -> {
+            
+            cp.asyncGet(con -> {
                 System.out.println("Number of free connections: " + cp.getFreeConnectionCount());
                 con.executeQuery(sql, r -> {
                     PrintUtil.printResultSet(r);
+                    cp.returnBack(con);
                 });
             });
             
@@ -45,12 +47,14 @@ public class TestConnectionPool {
         long t1 = System.currentTimeMillis();
         System.out.println("Thread pool creation time spent: " + (t1-t0)/1000 + "s");
         
-        cp.get(con -> {
+        cp.asyncGet(con -> {
             System.out.println("Number of free connections: " + cp.getFreeConnectionCount());
             
             con.executeQuery(sql, r -> {
                 PrintUtil.printResultSet(r);
+                cp.returnBack(con);
             });
+            
         });
         
         System.out.println("Number of free connections: " + cp.getFreeConnectionCount());

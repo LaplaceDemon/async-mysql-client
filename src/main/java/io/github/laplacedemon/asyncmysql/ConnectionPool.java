@@ -1,47 +1,37 @@
 package io.github.laplacedemon.asyncmysql;
 
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+import io.github.laplacedemon.AsyncPool;
 
 public class ConnectionPool {
 	private int capacity;
-	private final ConcurrentLinkedQueue<Connection> pool;
-	private final ConcurrentLinkedQueue<Consumer<Connection>> waitingTask;
+	private final AsyncPool<Connection> asyncPool;
 	
 	public int getFreeConnectionCount() {
-		return this.pool.size();
+		return this.asyncPool.size();
 	}
 	
 	public int getCapacity() {
 		return capacity;
 	}
-
-	ConnectionPool(int capacity) {
-		this.capacity = capacity;
-		this.pool = new ConcurrentLinkedQueue<>();
-		this.waitingTask = new ConcurrentLinkedQueue<>();
-	}
 	
-	public void get(Consumer<Connection> consumer) {
-		final Connection con = this.pool.poll();
-		if(con == null) {
-			waitingTask.add(consumer);
-			return ;
-		}
-		consumer.accept(con);
-		this.returnBack(con);
-	}
-
-	private void returnBack(Connection connection) {
-		boolean add = this.pool.add(connection);
-		if(add && !waitingTask.isEmpty()) {
-			Consumer<Connection> waitingConsumer = waitingTask.poll();
-			this.get(waitingConsumer);
-		}
-	}
-
-	boolean put(Connection con) {
-		return this.pool.add(con);
-	}
+	public ConnectionPool(int capacity, Supplier<Connection> generator) {
+        this.asyncPool = new AsyncPool<>(capacity, generator);
+    }
 	
+	ConnectionPool(int capacity, AsyncPool<Connection> asyncPool) {
+	    this.capacity = capacity;
+	    this.asyncPool = asyncPool;
+    }
+
+    public void asyncGet(Consumer<Connection> consumer) {
+		this.asyncPool.asyncGet(consumer);
+	}
+
+	public void returnBack(Connection connection) {
+	    this.asyncPool.returnBack(connection);
+	}
+
 }

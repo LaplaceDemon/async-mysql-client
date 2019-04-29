@@ -1,6 +1,5 @@
 package io.github.laplacedemon.asyncmysql.network.handler;
 
-import java.lang.reflect.Array;
 import java.nio.charset.Charset;
 
 import io.github.laplacedemon.asyncmysql.Config;

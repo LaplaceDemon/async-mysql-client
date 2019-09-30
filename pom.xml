@@ -98,13 +98,13 @@
 									<shadedPattern>io.github.laplacedemon.asyncmysql.io.netty</shadedPattern>
 								</relocation>
 								<relocation>
-                                    <pattern>io.github.laplacedemon.mysql.protocol</pattern>
-                                    <shadedPattern>io.github.laplacedemon.asyncmysql.protocol</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>io.github.laplacedemon.asyncwait</pattern>
-                                    <shadedPattern>io.github.laplacedemon.asyncmysql.asyncwait</shadedPattern>
-                                </relocation>
+									<pattern>io.github.laplacedemon.mysql.protocol</pattern>
+									<shadedPattern>io.github.laplacedemon.asyncmysql.protocol</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>io.github.laplacedemon.asyncwait</pattern>
+									<shadedPattern>io.github.laplacedemon.asyncmysql.asyncwait</shadedPattern>
+								</relocation>
 							</relocations>
 						</configuration>
 					</execution>

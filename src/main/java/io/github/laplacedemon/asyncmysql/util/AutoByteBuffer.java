@@ -1,7 +1,7 @@
 package io.github.laplacedemon.asyncmysql.util;
 
 /**
- * 自动扩容的ByteBuffer
+ * Automatic expansion buffer
  * @author jackie.sjq
  *
  */

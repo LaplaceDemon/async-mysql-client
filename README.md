@@ -1,6 +1,17 @@
 # async-mysql-client
 
-Asynchronous mysql client.
+Asynchronous mysql client. 
+
+Get it from maven:
+
+```xml
+<dependency>
+  <groupId>io.github.laplacedemon</groupId>
+  <artifactId>async-mysql-client</artifactId>
+  <version>0.1.0</version>
+</dependency>
+```
+
 
 ## Base
 

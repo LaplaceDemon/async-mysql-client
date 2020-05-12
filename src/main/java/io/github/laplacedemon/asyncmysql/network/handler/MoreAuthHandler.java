@@ -7,6 +7,7 @@ import io.github.laplacedemon.asyncmysql.Status;
 import io.github.laplacedemon.asyncmysql.network.AttributeMap;
 import io.github.laplacedemon.asyncmysql.network.OutputMySQLBufferAdapter;
 import io.github.laplacedemon.asyncmysql.network.buffer.ByteBufferMySQLMessage;
+import io.github.laplacedemon.asyncmysql.util.ArrayUtils;
 import io.github.laplacedemon.mysql.protocol.buffer.MySQLMessage;
 import io.github.laplacedemon.mysql.protocol.packet.auth.AuthSwitchResponsePacket;
 import io.github.laplacedemon.mysql.protocol.util.MySQLByteUtils;
@@ -33,7 +34,7 @@ public class MoreAuthHandler extends ChannelInboundHandlerAdapter {
 		byte[] serverVersion = AttributeMap.ioSession(ctx).serverInfo().getServerVersion();
 		
 		String transformation;
-		if(Arrays.compare(serverVersion, new byte[] {8,0,5}) > 0) {
+		if(ArrayUtils.compareBytes(serverVersion, new byte[] {8,0,5}) > 0) {
 			transformation = "RSA/ECB/OAEPWithSHA-1AndMGF1Padding";
 		} else {
 			transformation = "RSA/ECB/PKCS1Padding";
@@ -55,35 +56,4 @@ public class MoreAuthHandler extends ChannelInboundHandlerAdapter {
 		AttributeMap.ioSession(ctx).gotoStatus(Status.AuthSwitch);
 	}
 	
-	
-	/*
-	public static void main(String[] args) {
-        byte[] bs0 = new byte[]{(byte)8, (byte)1, (byte)2, (byte)3};
-        byte[] bs1 = new byte[]{(byte)8, (byte)1, (byte)2};
-        int compare = Arrays.compare(bs0, bs1);
-        System.out.println(compare);
-    }
-    */
-	
-}
-
-class Arrays {
-    public static int compare(byte[] a, byte[] b) {
-        if (a == b)
-            return 0;
-        
-        if (a == null || b == null)
-            return a == null ? -1 : 1;
-
-        int ml = Math.min(a.length, b.length);
-        for (int i = 0; i < ml; i++) {
-            if(a[i]!=b[i]) {
-                return a[i] - b[i];
-            }
-        }
-
-        return a.length - b.length;
-    }
-    
-    
 }

@@ -3,7 +3,7 @@ package io.github.laplacedemon.asyncmysql;
 import java.util.function.Consumer;
 
 public class Config {
-	private String serverAddress;
+	private String host;
 	private int port;
 	private String username;
 	private String password;
@@ -40,12 +40,12 @@ public class Config {
 		this.port = port;
 	}
 
-	public String getServerAddress() {
-		return serverAddress;
+	public String getHost() {
+		return host;
 	}
 
-	public void setServerAddress(String serverAddress) {
-		this.serverAddress = serverAddress;
+	public void setHost(String host) {
+		this.host = host;
 	}
 
 	public String getDatabase() {

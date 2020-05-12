@@ -60,8 +60,9 @@ public class AsyncMySQL {
 		return asyncMySQL;
 	}
 	
-	public Config makeConfig(String addr, int port, String username, String password, String database) {
-		Config config = new Config();config.setServerAddress(addr);
+	public Config makeConfig(String host, int port, String username, String password, String database) {
+		Config config = new Config();
+		config.setHost(host);
 		config.setPort(port);
 		config.setUsername(username);
 		config.setPassword(password);
@@ -70,11 +71,11 @@ public class AsyncMySQL {
 		return config;
 	}
 	
-	public Config makeConfig(String addr, int port, String username, String password) {
-		return makeConfig(addr, port, username, password, null);
+	public Config makeConfig(String host, int port, String username, String password) {
+		return makeConfig(host, port, username, password, null);
 	}
 
-	public static AsyncMySQL create(String addr, int port, String username, String password) throws IOException {
+	public static AsyncMySQL create(String host, int port, String username, String password) throws IOException {
 		return create();
 	}
 

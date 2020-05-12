@@ -3,3 +3,5 @@
 /.classpath
 /.project
 /dependency-reduced-pom.xml
+async-mysql-client.iml
+/.idea/

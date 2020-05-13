@@ -1,9 +1,11 @@
 package io.github.laplacedemon.asyncmysql;
 
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 import io.github.laplacedemon.asyncmysql.network.AttributeMap;
@@ -12,7 +14,7 @@ import io.github.laplacedemon.asyncwait.AsyncPool;
 import io.netty.channel.Channel;
 
 public class AsyncMySQL {
-    
+
     private static ThreadLocal<Semaphore> blocker = ThreadLocal.withInitial(()->{
         return new Semaphore(1);
     });
@@ -36,9 +38,10 @@ public class AsyncMySQL {
 	
 	private Connection connect(Config config) {
 	    final Semaphore semaphore = blocker.get();
-	    Connection connection = null;
-	    
+		AtomicReference<Connection> atomicConnectionRef = new AtomicReference<>();
+
 	    this.connect(config, (Connection newCon)->{
+			atomicConnectionRef.set(newCon);
 	        semaphore.release();
 	    });
 	    
@@ -48,7 +51,7 @@ public class AsyncMySQL {
             e.printStackTrace();
         }
 	    
-        return connection;
+        return atomicConnectionRef.get();
     }
 	
 	public static AsyncMySQL create() {
@@ -67,7 +70,7 @@ public class AsyncMySQL {
 		config.setUsername(username);
 		config.setPassword(password);
 		config.setDatabase(database);
-		
+
 		return config;
 	}
 	

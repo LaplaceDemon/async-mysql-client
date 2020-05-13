@@ -1,4 +1,4 @@
-package sjq.test.jdbc;
+package io.github.laplacedemon.test.jdbc;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -9,7 +9,7 @@ import java.util.Map;
 import org.junit.Ignore;
 import org.junit.Test;
 
-public class TestJDBC {
+public class JDBCTest {
 	/**
 	<pre>
 	CREATE SCHEMA `testdb` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ;

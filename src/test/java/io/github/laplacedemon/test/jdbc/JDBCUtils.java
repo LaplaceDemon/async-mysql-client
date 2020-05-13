@@ -1,4 +1,4 @@
-package sjq.test.jdbc;
+package io.github.laplacedemon.test.jdbc;
 
 import java.lang.reflect.Field;
 import java.sql.Connection;

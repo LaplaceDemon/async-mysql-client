@@ -25,10 +25,10 @@ public class TestAsyncMySQL {
 		final String sql = "select 1+1,1+2,2+3,3+5";
 		
 		asyncMySQL.connect(config, (Connection con) -> {
-			System.out.println("Successfully connected to MySQL。");
+			System.out.println("Successfully connected to MySQL");
 			AsyncPreparedStatement asyncPS = con.prepareStatement(sql);
 			con.executeQuery(asyncPS, (ResultSet resultset)->{
-				System.out.println("Query completed。");
+				System.out.println("Query completed");
 				PrintUtil.printResultSet(resultset);
 			});
 		});
@@ -41,9 +41,9 @@ public class TestAsyncMySQL {
 		final String sql = "INSERT INTO t_student(name, age) VALUES ('xiaosha', 32)";
 		
 		asyncMySQL.connect(config, (Connection con) -> {
-			System.out.println("Successfully connected to MySQL。");
+			System.out.println("Successfully connected to MySQL");
 			con.executeUpdate(sql, () -> {
-				System.out.println("Execution completed.");
+				System.out.println("Execution completed");
 			});
 		});
 		
@@ -55,9 +55,9 @@ public class TestAsyncMySQL {
 		final String sql = "INSERT INTO `testdb`.`t_student` (`name`, `age`) VALUES ('xiaoming04', '4')";
 		
 		asyncMySQL.connect(config, (Connection con) -> {
-			System.out.println("Successfully connected to MySQL。");
+			System.out.println("Successfully connected to MySQL");
 			con.executeUpdate(sql, (long count, long id)->{
-				System.out.println("Execution completed.");
+				System.out.println("Execution completed");
 				PrintUtil.printResultSet(count, id);
 			});
 		});
@@ -70,32 +70,30 @@ public class TestAsyncMySQL {
 		final String sql = "INSERT INTO `testdb`.`t_student` (`name`, `age`) VALUES (?, ?)";
 		
 		asyncMySQL.connect(config, (Connection con) -> {
-			System.out.println("Successfully connected to MySQL。");
+			System.out.println("Successfully connected to MySQL");
 			AsyncPreparedStatement asyncPS = con.prepareStatement(sql, "xiaoming5", 18);
 			con.executeUpdate(asyncPS, (long count, long id)->{
-				System.out.println("Execution completed.");
+				System.out.println("Execution completed");
 				PrintUtil.printResultSet(count, id);
 			});
 		});
 		
 		asyncMySQL.start();
 	}
-	
-	
-	
+
 	@Test
 	public void testTxn() throws IOException, InterruptedException {
 		asyncMySQL.connect(config, (Connection con) -> {
-			System.out.println("Successfully connected to MySQL。");
+			System.out.println("Successfully connected to MySQL");
 			con.beginTxn(()-> {
 				con.executeUpdate("INSERT INTO `testdb`.`t_student` (`name`, `age`) VALUES ('xiaohong01', 12)", (long count0, long id0)->{
-					System.out.println("The transaction 1 execution completed.");
+					System.out.println("The transaction 1 execution completed");
 					
 					con.executeUpdate("INSERT INTO `testdb`.`t_student` (`name`, `age`) VALUES ('xiaohong02', 13)",(long count1, long id1)-> {
-						System.out.println("The transaction 2 execution completed.");
+						System.out.println("The transaction 2 execution completed");
 						
 						con.endTxn(()->{
-							System.out.println("The transaction is completed.");
+							System.out.println("The transaction is completed");
 						});
 					});
 				});
